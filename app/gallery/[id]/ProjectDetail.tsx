@@ -745,7 +745,6 @@ export default function ProjectDetail({ projectId }: ProjectDetailProps) {
                         key === 'decor' ? '装飾品' :
                         key === 'other' ? 'その他' : key
                       }</span>
-                      {/* 型エラー修正: value as React.ReactNode */}
                       <span className="font-semibold text-teal-600">{value as React.ReactNode}</span>
                     </div>
                   ))}
