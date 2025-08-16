@@ -770,7 +770,7 @@ export default function ProjectDetail({ projectId }: ProjectDetailProps) {
                     {project.features.map((material: string, index: number) => (
                       <li key={index} className="flex items-start space-x-3">
                         <i className="ri-star-line text-orange-500 mt-1 flex-shrink-0"></i>
-                        <span className="text-gray-700">{feature}</span>
+                        <span className="text-gray-700">{material}</span>
                       </li>
                     ))}
                   </ul>
