@@ -151,9 +151,8 @@ export default function Home() {
       setCarouselPosition(index);
     }
   };
-
-  return (
-    <div className="min-h-screen bg-white">
+return (
+  <div className="min-h-screen bg-white">
       {/* レスポンシブヘッダー */}
       <header className="bg-gray-900 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
