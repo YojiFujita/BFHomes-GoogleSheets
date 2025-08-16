@@ -359,7 +359,7 @@ export default function Home() {
               {/* レスポンシブヘッダー */}
               <div className="flex justify-between items-start mb-6 lg:mb-8">
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 pr-4 leading-tight">
-                  {selectedProject.title}
+                  {selectedProject.title: string } | null
                 </h2>
                 <button
                   onClick={closeModal}
