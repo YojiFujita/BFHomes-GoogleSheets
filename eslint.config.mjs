@@ -13,6 +13,7 @@ import { next } from '@eslint/js';
 export default [
   next(),
 ];
+/*
 const eslintConfig = [
 //  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
@@ -23,3 +24,4 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
+*/
