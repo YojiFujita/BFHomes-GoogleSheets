@@ -784,7 +784,7 @@ export default function ProjectDetail({ projectId }: ProjectDetailProps) {
                   <div>
                     <h3 className="text-lg font-semibold mb-4 text-red-600">Before（改装前）</h3>
                     <ul className="space-y-3">
-                      {project.beforeDetails.map((detail, index) => (
+                      {project.beforeDetails.map((detail: string, index: number) => (
                         <li key={index} className="flex items-start space-x-3">
                           <i className="ri-close-circle-line text-red-500 mt-1 flex-shrink-0"></i>
                           <span className="text-gray-700">{detail}</span>
@@ -795,7 +795,7 @@ export default function ProjectDetail({ projectId }: ProjectDetailProps) {
                   <div>
                     <h3 className="text-lg font-semibold mb-4 text-teal-600">After（改装後）</h3>
                     <ul className="space-y-3">
-                      {project.afterDetails.map((detail, index) => (
+                      {project.afterDetails.map((detail: string, index: number) => (
                         <li key={index} className="flex items-start space-x-3">
                           <i className="ri-checkbox-circle-line text-teal-600 mt-1 flex-shrink-0"></i>
                           <span className="text-gray-700">{detail}</span>
