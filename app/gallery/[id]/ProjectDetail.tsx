@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 interface ProjectDetailProps {
   projectId: string;
 }
-
 export default function ProjectDetail({ projectId }: ProjectDetailProps) {
   const [project, setProject] = useState<any>(null);
   const [showContactForm, setShowContactForm] = useState(false);
