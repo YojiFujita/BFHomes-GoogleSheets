@@ -767,7 +767,7 @@ export default function ProjectDetail({ projectId }: ProjectDetailProps) {
                 <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8">
                   <h3 className="text-xl font-bold mb-4">特徴・こだわり</h3>
                   <ul className="space-y-3">
-                    {project.features.map((feature, index) => (
+                    {project.features.map((material: string, index: number) => (
                       <li key={index} className="flex items-start space-x-3">
                         <i className="ri-star-line text-orange-500 mt-1 flex-shrink-0"></i>
                         <span className="text-gray-700">{feature}</span>
