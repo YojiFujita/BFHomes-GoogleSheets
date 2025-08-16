@@ -745,7 +745,7 @@ export default function ProjectDetail({ projectId }: ProjectDetailProps) {
                         key === 'decor' ? '装飾品' :
                         key === 'other' ? 'その他' : key
                       }</span>
-                      <span className="font-semibold text-teal-600">{value}</span>
+                      <span className="font-semibold text-teal-600">{value as React.ReactNode}</span>
                     </div>
                   ))}
                 </div>
