@@ -110,7 +110,7 @@ export default function Home() {
     }
   };
 
-  const openModal = (project) => {
+  const openModal =  (project: any) => {
     setSelectedProject(project);
     setModalOpen(true);
     document.body.style.overflow = 'hidden';
