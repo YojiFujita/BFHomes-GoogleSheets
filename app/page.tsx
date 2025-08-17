@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -12,7 +11,7 @@ export default function Home() {
   });
   const [showEstimate, setShowEstimate] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
   const [carouselPosition, setCarouselPosition] = useState(1); 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -110,7 +109,7 @@ export default function Home() {
     }
   };
 
-  const openModal =  (project: any) => {
+  const openModal = (project: any) => {
     setSelectedProject(project);
     setModalOpen(true);
     document.body.style.overflow = 'hidden';
@@ -143,6 +142,7 @@ export default function Home() {
       setCarouselPosition(newPosition);
     }
   };
+
   const goToSlide = (index: number) => {
     const container = document.getElementById('carousel-container');
     if (container) {
@@ -151,6 +151,7 @@ export default function Home() {
       setCarouselPosition(index);
     }
   };
+
   return (
     <div className="min-h-screen bg-white">
       {/* レスポンシブヘッダー */}
@@ -197,7 +198,7 @@ export default function Home() {
               <span className="text-teal-600">あとはプロに任せるだけ。</span>
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 sm:mb-12 leading-relaxed px-4">
-              品番いらず・5秒で見積
+              専門いらず・5秒で見積
               <br />
               Before / After 写真を比較するだけで完成イメージを直感的に掴める
             </p>
@@ -358,7 +359,7 @@ export default function Home() {
               {/* レスポンシブヘッダー */}
               <div className="flex justify-between items-start mb-6 lg:mb-8">
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 pr-4 leading-tight">
-                  {selectedProject.title: string } | null
+                  {selectedProject.title}
                 </h2>
                 <button
                   onClick={closeModal}
@@ -545,7 +546,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 lg:mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
-              "品番いらず"の直感体験
+              "専門いらず"の直感体験
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 px-4">
               専門知識がなくても、写真を選ぶだけで理想のリノベーションが実現
@@ -663,7 +664,7 @@ export default function Home() {
       <section className="py-12 sm:py-16 lg:py-24 bg-teal-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
-            品番ゼロ、写真ひとつで。
+            専門ゼロ、写真ひとつで。
           </h2>
           <p className="text-lg sm:text-xl lg:text-2xl mb-8 sm:mb-12 opacity-90 leading-relaxed px-4">
             リノベ初心者の大家さんにも
