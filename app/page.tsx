@@ -248,9 +248,14 @@ export default function Home() {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {beforeAfterExamples.map((project, index) => {
+                const total = beforeAfterExamples.length;
+                const prevIndex = (carouselPosition - 1 + total) % total;
+                const nextIndex = (carouselPosition + 1) % total;
                 const isCenter = !isMobile && carouselPosition === index;
-                const isSide = !isMobile && Math.abs(carouselPosition - index) === 1;
-                const isVisible = !isMobile && Math.abs(carouselPosition - index) <= 1;
+                const isPrev = !isMobile && prevIndex === index;
+                const isNext = !isMobile && nextIndex === index;
+                const isSide = isPrev || isNext;
+                const isVisible = !isMobile && (isCenter || isPrev || isNext);
 
                 return (
                   <div
@@ -369,27 +374,78 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* レスポンシブ画像セクション */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 mb-6 lg:mb-8">
-                <div className="relative">
-                  <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-lg font-semibold z-10 shadow-lg">
-                    BEFORE
+              {/* 3列のBefore/After画像セクション */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
+                {/* 左側: 矢印の左のBefore/After */}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-semibold z-10 shadow-lg">
+                      BEFORE
+                    </div>
+                    <img
+                      src={selectedProject.before}
+                      alt="Before renovation (left)"
+                      className="w-full h-32 sm:h-40 lg:h-48 xl:h-56 object-cover object-top rounded-xl shadow-lg"
+                    />
                   </div>
-                  <img
-                    src={selectedProject.before}
-                    alt="Before renovation"
-                    className="w-full h-48 sm:h-64 lg:h-80 xl:h-96 object-cover object-top rounded-2xl shadow-lg"
-                  />
+                  <div className="relative">
+                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-teal-600 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-semibold z-10 shadow-lg">
+                      AFTER
+                    </div>
+                    <img
+                      src={selectedProject.after}
+                      alt="After renovation (left)"
+                      className="w-full h-32 sm:h-40 lg:h-48 xl:h-56 object-cover object-top rounded-xl shadow-lg"
+                    />
+                  </div>
                 </div>
-                <div className="relative">
-                  <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-teal-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-lg font-semibold z-10 shadow-lg">
-                    AFTER
+
+                {/* 中央: メインのBefore/After（現在のサイズ） */}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-lg font-semibold z-10 shadow-lg">
+                      BEFORE
+                    </div>
+                    <img
+                      src={selectedProject.before}
+                      alt="Before renovation (center)"
+                      className="w-full h-48 sm:h-64 lg:h-80 xl:h-96 object-cover object-top rounded-2xl shadow-lg"
+                    />
                   </div>
-                  <img
-                    src={selectedProject.after}
-                    alt="After renovation"
-                    className="w-full h-48 sm:h-64 lg:h-80 xl:h-96 object-cover object-top rounded-2xl shadow-lg"
-                  />
+                  <div className="relative">
+                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-teal-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-lg font-semibold z-10 shadow-lg">
+                      AFTER
+                    </div>
+                    <img
+                      src={selectedProject.after}
+                      alt="After renovation (center)"
+                      className="w-full h-48 sm:h-64 lg:h-80 xl:h-96 object-cover object-top rounded-2xl shadow-lg"
+                    />
+                  </div>
+                </div>
+
+                {/* 右側: 矢印の右のBefore/After */}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-semibold z-10 shadow-lg">
+                      BEFORE
+                    </div>
+                    <img
+                      src={selectedProject.before}
+                      alt="Before renovation (right)"
+                      className="w-full h-32 sm:h-40 lg:h-48 xl:h-56 object-cover object-top rounded-xl shadow-lg"
+                    />
+                  </div>
+                  <div className="relative">
+                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-teal-600 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-semibold z-10 shadow-lg">
+                      AFTER
+                    </div>
+                    <img
+                      src={selectedProject.after}
+                      alt="After renovation (right)"
+                      className="w-full h-32 sm:h-40 lg:h-48 xl:h-56 object-cover object-top rounded-xl shadow-lg"
+                    />
+                  </div>
                 </div>
               </div>
 
