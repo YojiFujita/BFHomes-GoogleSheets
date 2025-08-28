@@ -122,25 +122,33 @@ export default function Home() {
   };
 
   const scrollLeft = () => {
-    const container = document.getElementById('carousel-container');
-    if (container) {
-      const cardWidth = isMobile ? 320 : 400;
-      const currentPosition = Math.round(container.scrollLeft / cardWidth);
-      const newPosition = currentPosition === 0 ? beforeAfterExamples.length - 1 : currentPosition - 1;
-      container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
-      setCarouselPosition(newPosition);
+    if (isMobile) {
+      const container = document.getElementById('carousel-container');
+      if (container) {
+        const cardWidth = 320;
+        const currentPosition = Math.round(container.scrollLeft / cardWidth);
+        const newPosition = currentPosition === 0 ? beforeAfterExamples.length - 1 : currentPosition - 1;
+        container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
+        setCarouselPosition(newPosition);
+      }
+      return;
     }
+    setCarouselPosition((p) => (p - 1 + beforeAfterExamples.length) % beforeAfterExamples.length);
   };
 
   const scrollRight = () => {
-    const container = document.getElementById('carousel-container');
-    if (container) {
-      const cardWidth = isMobile ? 320 : 400;
-      const currentPosition = Math.round(container.scrollLeft / cardWidth);
-      const newPosition = currentPosition === beforeAfterExamples.length - 1 ? 0 : currentPosition + 1;
-      container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
-      setCarouselPosition(newPosition);
+    if (isMobile) {
+      const container = document.getElementById('carousel-container');
+      if (container) {
+        const cardWidth = 320;
+        const currentPosition = Math.round(container.scrollLeft / cardWidth);
+        const newPosition = currentPosition === beforeAfterExamples.length - 1 ? 0 : currentPosition + 1;
+        container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
+        setCarouselPosition(newPosition);
+      }
+      return;
     }
+    setCarouselPosition((p) => (p + 1) % beforeAfterExamples.length);
   };
 
   const goToSlide = (index: number) => {
@@ -242,79 +250,91 @@ export default function Home() {
             </button>
 
             {/* レスポンシブカルーセルコンテナ */}
-            <div
-              id="carousel-container"
-              className={`flex overflow-x-auto gap-4 lg:gap-8 pb-4 scrollbar-hide scroll-smooth px-4 lg:px-16 ${isMobile ? '' : 'justify-start'}`}
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {beforeAfterExamples.map((project, index) => {
-                const total = beforeAfterExamples.length;
-                const prevIndex = (carouselPosition - 1 + total) % total;
-                const nextIndex = (carouselPosition + 1) % total;
-                const isCenter = !isMobile && carouselPosition === index;
-                const isPrev = !isMobile && prevIndex === index;
-                const isNext = !isMobile && nextIndex === index;
-                const isSide = isPrev || isNext;
-                const isVisible = !isMobile && (isCenter || isPrev || isNext);
-
-                return (
+            {isMobile ? (
+              <div
+                id="carousel-container"
+                className={`flex overflow-x-auto gap-4 lg:gap-8 pb-4 scrollbar-hide scroll-smooth px-4 lg:px-16`}
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {beforeAfterExamples.map((project, index) => (
                   <div
                     key={index}
                     onClick={() => openModal(project)}
-                    className={`flex-shrink-0 transition-all duration-300 cursor-pointer group bg-gray-50 rounded-2xl shadow-sm hover:shadow-lg transform hover:-translate-y-1 ${isMobile ? 'w-72 p-4' : isCenter ? 'w-[700px] lg:w-[800px] opacity-100 scale-100 p-6 lg:p-8 z-10 relative' : isSide ? 'w-[280px] lg:w-[320px] opacity-40 scale-85 hover:opacity-60 p-4 lg:p-5' : 'w-[200px] lg:w-[250px] opacity-20 scale-75 p-3 lg:p-4'} ${!isMobile && !isVisible ? 'hidden' : ''}`}
+                    className={`flex-shrink-0 transition-all duration-300 cursor-pointer group bg-gray-50 rounded-2xl shadow-sm hover:shadow-lg transform hover:-translate-y-1 w-72 p-4`}
                   >
                     <div className="grid grid-cols-2 gap-2 lg:gap-4 mb-3 lg:mb-6">
                       <div className="relative">
-                        <div
-                          className={`absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md ${isMobile || isCenter ? 'text-xs' : isSide ? 'text-xs scale-90' : 'text-xs scale-75'}`}
-                        >
+                        <div className={`absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md text-xs`}>
                           BEFORE
                         </div>
-                        <img
-                          src={project.before}
-                          alt="Before renovation"
-                          className={`w-full object-cover object-top rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 ${isMobile ? 'h-24' : isCenter ? 'h-56 lg:h-64' : isSide ? 'h-32 lg:h-36' : 'h-24 lg:h-28'}`}
-                        />
+                        <img src={project.before} alt="Before" className={`w-full h-24 object-cover object-top rounded-xl shadow-md`} />
                       </div>
                       <div className="relative">
-                        <div
-                          className={`absolute top-2 left-2 bg-teal-600 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md ${isMobile || isCenter ? 'text-xs' : isSide ? 'text-xs scale-90' : 'text-xs scale-75'}`}
-                        >
+                        <div className={`absolute top-2 left-2 bg-teal-600 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md text-xs`}>
                           AFTER
                         </div>
-                        <img
-                          src={project.after}
-                          alt="After renovation"
-                          className={`w-full object-cover object-top rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 ${isMobile ? 'h-24' : isCenter ? 'h-56 lg:h-64' : isSide ? 'h-32 lg:h-36' : 'h-24 lg:h-28'}`}
-                        />
+                        <img src={project.after} alt="After" className={`w-full h-24 object-cover object-top rounded-xl shadow-md`} />
                       </div>
                     </div>
-
                     <div className="text-center">
-                      <h3
-                        className={`font-bold mb-2 line-clamp-2 ${isMobile ? 'text-sm' : isCenter ? 'text-xl lg:text-2xl' : isSide ? 'text-sm lg:text-base' : 'text-xs lg:text-sm'}`}
-                      >
-                        {project.title}
-                      </h3>
-                      <div
-                        className={`flex justify-center items-center space-x-2 lg:space-x-4 text-gray-600 ${isMobile ? 'text-xs' : isCenter ? 'text-base' : isSide ? 'text-sm' : 'text-xs'}`}
-                      >
-                        {(isCenter || isMobile) && (
-                          <>
-                            <span className="text-teal-600 font-bold">{project.price}</span>
-                            <span>•</span>
-                            <span>{project.period}</span>
-                          </>
-                        )}
-                        {isSide && !isMobile && (
-                          <span className="text-teal-600 font-bold text-sm">{project.price}</span>
-                        )}
-                      </div>
+                      <h3 className={`font-bold mb-2 line-clamp-2 text-sm`}>{project.title}</h3>
                     </div>
                   </div>
+                ))}
+              </div>
+            ) : (
+              (() => {
+                const total = beforeAfterExamples.length;
+                const prevIndex = (carouselPosition - 1 + total) % total;
+                const nextIndex = (carouselPosition + 1) % total;
+                const indices = [prevIndex, carouselPosition, nextIndex];
+                return (
+                  <div className="flex justify-center gap-8 pb-4 px-16">
+                    {indices.map((idx, i) => {
+                      const project = beforeAfterExamples[idx];
+                      const isCenter = i === 1;
+                      const isSide = !isCenter;
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => openModal(project)}
+                          className={`transition-all duration-300 cursor-pointer group bg-gray-50 rounded-2xl shadow-sm hover:shadow-lg transform hover:-translate-y-1 ${isCenter ? 'w-[700px] lg:w-[800px] opacity-100 scale-100 p-8 z-10 relative' : 'w-[280px] lg:w-[320px] opacity-40 scale-85 hover:opacity-60 p-5'}`}
+                        >
+                          <div className="grid grid-cols-2 gap-4 mb-6">
+                            <div className="relative">
+                              <div className={`absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md ${isCenter ? 'text-xs' : 'text-xs scale-90'}`}>
+                                BEFORE
+                              </div>
+                              <img src={project.before} alt="Before renovation" className={`w-full object-cover object-top rounded-xl shadow-md ${isCenter ? 'h-64' : 'h-36'}`} />
+                            </div>
+                            <div className="relative">
+                              <div className={`absolute top-2 left-2 bg-teal-600 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md ${isCenter ? 'text-xs' : 'text-xs scale-90'}`}>
+                                AFTER
+                              </div>
+                              <img src={project.after} alt="After renovation" className={`w-full object-cover object-top rounded-xl shadow-md ${isCenter ? 'h-64' : 'h-36'}`} />
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <h3 className={`font-bold mb-2 line-clamp-2 ${isCenter ? 'text-2xl' : 'text-base'}`}>{project.title}</h3>
+                            <div className={`flex justify-center items-center space-x-4 text-gray-600 ${isCenter ? 'text-base' : 'text-sm'}`}>
+                              {isCenter ? (
+                                <>
+                                  <span className="text-teal-600 font-bold">{project.price}</span>
+                                  <span>•</span>
+                                  <span>{project.period}</span>
+                                </>
+                              ) : (
+                                <span className="text-teal-600 font-bold text-sm">{project.price}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 );
-              })}
-            </div>
+              })()
+            )}
 
             {/* レスポンシブプログレスバー */}
             <div className="flex justify-center mt-6 lg:mt-8 space-x-2">
