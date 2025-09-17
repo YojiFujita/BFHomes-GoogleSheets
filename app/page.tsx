@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -7,12 +8,12 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [estimateData, setEstimateData] = useState({
     area: '',
-    roomType: 'living'
+    selectedOptions: []
   });
-  const [showEstimate, setShowEstimate] = useState(false);
+  const [estimateResult, setEstimateResult] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [carouselPosition, setCarouselPosition] = useState(1); 
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [carouselPosition, setCarouselPosition] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function Home() {
         setTimeout(() => {
           const container = document.getElementById('carousel-container');
           if (container) {
-            const cardWidth = 400; 
+            const cardWidth = 400;
             container.scrollTo({ left: cardWidth * 1, behavior: 'smooth' });
           }
         }, 100);
@@ -36,6 +37,7 @@ export default function Home() {
 
   const beforeAfterExamples = [
     {
+      id: 1,
       before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20apartment%20interior%20with%20worn%20tatami%20mats%2C%20dark%20wooden%20floors%2C%20outdated%20lighting%20fixtures%2C%20cramped%20layout%2C%20dim%20natural%20lighting%2C%20dated%20wallpaper%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=800&height=600&seq=1&orientation=landscape",
       after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20apartment%20interior%20with%20light%20wooden%20flooring%2C%20white%20walls%2C%20contemporary%20LED%20lighting%2C%20open%20layout%2C%20large%20windows%20with%20natural%20light%2C%20minimalist%20design%2C%20clean%20and%20spacious%20feeling%2C%20simple%20clean%20background&width=800&height=600&seq=2&orientation=landscape",
       title: "伝統的な和室から現代的なリビングへ",
@@ -43,19 +45,23 @@ export default function Home() {
       price: "45万円",
       period: "7日間",
       location: "東京都渋谷区",
-      date: "2024年1月"
+      date: "2024年1月",
+      featured: true
     },
     {
-      before: "https://readdy.ai/api/search-image?query=Old%20cramped%20Japanese%20kitchen%20with%20outdated%20appliances%2C%20dark%20countertops%2C%20poor%20lighting%2C%20limited%20storage%20space%2C%20worn%20cabinets%2C%20traditional%20but%20inefficient%20layout%2C%20simple%20clean%20background&width=800&height=600&seq=3&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20kitchen%20with%20white%20cabinets%2C%20marble%20countertops%2C%20under-cabinet%20LED%20lighting%2C%20efficient%20storage%20solutions%2C%20contemporary%20appliances%2C%20clean%20minimalist%20design%2C%20simple%20clean%20background&width=800&height=600&seq=4&orientation=landscape",
+      id: 2,
+      before: "https://static.readdy.ai/image/482db82fa6135662cb175aa58592a390/9747dda6203049373e2ef3554fb2c9fb.jfif",
+      after: "https://static.readdy.ai/image/482db82fa6135662cb175aa58592a390/58414e870e011c5caece62221230918d.jfif",
       title: "古いキッチンから機能的な空間へ",
-      description: "白いキャビネット + 間接照明で清潔感あふれるモダンキッチンに。収納効率を大幅に向上させ、調理動線も最適化しました。LED照明により作業効率も格段にアップしています。",
+      description: "シンプルで清潔感のあるキッチンに生まれ変わりました。白を基調とした明るい空間で、調理がより楽しくなる機能的なレイアウトを実現。収納も充実し、使い勝手が格段に向上しています。",
       price: "38万円",
       period: "5日間",
       location: "東京都新宿区",
-      date: "2024年2月"
+      date: "2024年2月",
+      featured: true
     },
     {
+      id: 3,
       before: "https://readdy.ai/api/search-image?query=Old%20small%20Japanese%20bathroom%20with%20outdated%20tiles%2C%20poor%20lighting%2C%20cramped%20space%2C%20traditional%20fixtures%2C%20worn%20surfaces%2C%20dim%20and%20uninviting%20atmosphere%2C%20simple%20clean%20background&width=800&height=600&seq=5&orientation=landscape",
       after: "https://readdy.ai/api/search-image?query=Modern%20luxurious%20Japanese%20bathroom%20with%20contemporary%20tiles%2C%20bright%20LED%20lighting%2C%20spacious%20layout%2C%20modern%20fixtures%2C%20clean%20surfaces%2C%20spa-like%20atmosphere%20with%20natural%20elements%2C%20simple%20clean%20background&width=800&height=600&seq=6&orientation=landscape",
       title: "狭い浴室からスパのような空間へ",
@@ -63,9 +69,11 @@ export default function Home() {
       price: "52万円",
       period: "8日間",
       location: "東京都港区",
-      date: "2024年3月"
+      date: "2024年3月",
+      featured: true
     },
     {
+      id: 4,
       before: "https://readdy.ai/api/search-image?query=Old%20Japanese%20bedroom%20with%20traditional%20tatami%20flooring%2C%20dark%20wooden%20furniture%2C%20poor%20natural%20lighting%2C%20cramped%20space%2C%20outdated%20traditional%20style%2C%20simple%20clean%20background&width=800&height=600&seq=8&orientation=landscape",
       after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20bedroom%20with%20light%20hardwood%20floors%2C%20contemporary%20furniture%2C%20excellent%20natural%20lighting%2C%20spacious%20layout%2C%20minimalist%20modern%20decor%2C%20simple%20clean%20background&width=800&height=600&seq=9&orientation=landscape",
       title: "昔ながらの寝室からモダン空間へ",
@@ -73,9 +81,11 @@ export default function Home() {
       price: "42万円",
       period: "6日間",
       location: "東京都世田谷区",
-      date: "2024年4月"
+      date: "2024年4月",
+      featured: false
     },
     {
+      id: 5,
       before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20entryway%20with%20worn%20wooden%20floors%2C%20outdated%20storage%2C%20poor%20lighting%2C%20cramped%20layout%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=800&height=600&seq=10&orientation=landscape",
       after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20entryway%20with%20contemporary%20flooring%2C%20efficient%20storage%20solutions%2C%20excellent%20LED%20lighting%2C%20spacious%20organized%20layout%2C%20clean%20minimalist%20design%2C%20simple%20clean%20background&width=800&height=600&seq=11&orientation=landscape",
       title: "玄関から始まる新しい暮らし",
@@ -83,9 +93,11 @@ export default function Home() {
       price: "28万円",
       period: "4日間",
       location: "東京都品川区",
-      date: "2024年5月"
+      date: "2024年5月",
+      featured: false
     },
     {
+      id: 6,
       before: "https://readdy.ai/api/search-image?query=Old%20Japanese%20dining%20area%20with%20traditional%20low%20table%2C%20tatami%20seating%2C%20poor%20lighting%2C%20cramped%20space%2C%20outdated%20traditional%20style%2C%20simple%20clean%20background&width=800&height=600&seq=12&orientation=landscape",
       after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20dining%20area%20with%20contemporary%20dining%20table%2C%20modern%20chairs%2C%20excellent%20lighting%2C%20spacious%20layout%2C%20stylish%20modern%20interior%20design%2C%20simple%20clean%20background&width=800&height=600&seq=13&orientation=landscape",
       title: "食事空間の現代的な変身",
@@ -93,14 +105,45 @@ export default function Home() {
       price: "35万円",
       period: "5日間",
       location: "東京都目黒区",
-      date: "2024年6月"
+      date: "2024年6月",
+      featured: false
     }
   ];
 
+  // featuredがtrueの事例のみフィルタリング
+  const featuredProjects = beforeAfterExamples.filter(project => project.featured);
+
+  const optionServices = [
+    { id: 'ceiling', name: '天井張替え', price: 30000, displayPrice: '30,000円～' },
+    { id: 'lighting', name: '照明アップグレード（間接照明・LED）', price: 20000, displayPrice: '20,000円～' },
+    { id: 'water', name: '水回り簡易改修（キッチン・洗面台など）', price: 50000, displayPrice: '50,000円～' }
+  ];
+
+  const handleOptionChange = (optionId) => {
+    setEstimateData(prev => ({
+      ...prev,
+      selectedOptions: prev.selectedOptions.includes(optionId)
+        ? prev.selectedOptions.filter(id => id !== optionId)
+        : [...prev.selectedOptions, optionId]
+    }));
+  };
+
   const calculateEstimate = () => {
-    const basePrice = parseFloat(estimateData.area) * 15000;
-    const multiplier = estimateData.roomType === 'kitchen' ? 1.3 : estimateData.roomType === 'bathroom' ? 1.5 : 1.0;
-    return Math.round(basePrice * multiplier);
+    if (!estimateData.area || estimateData.area === '') return;
+
+    const areaNum = parseFloat(estimateData.area);
+    if (isNaN(areaNum) || areaNum <= 0) return;
+
+    const basePrice = Math.max(areaNum * 10000, 300000); // 基本料金 1㎡=10,000円（最低30万円）
+
+    // オプション料金の計算
+    const optionPrice = estimateData.selectedOptions.reduce((total, optionId) => {
+      const option = optionServices.find(opt => opt.id === optionId);
+      return total + (option ? option.price : 0);
+    }, 0);
+
+    const estimate = basePrice + optionPrice;
+    setEstimateResult(estimate);
   };
 
   const handleEstimate = () => {
@@ -109,7 +152,7 @@ export default function Home() {
     }
   };
 
-  const openModal = (project: any) => {
+  const openModal = (project) => {
     setSelectedProject(project);
     setModalOpen(true);
     document.body.style.overflow = 'hidden';
@@ -122,36 +165,28 @@ export default function Home() {
   };
 
   const scrollLeft = () => {
-    if (isMobile) {
-      const container = document.getElementById('carousel-container');
-      if (container) {
-        const cardWidth = 320;
-        const currentPosition = Math.round(container.scrollLeft / cardWidth);
-        const newPosition = currentPosition === 0 ? beforeAfterExamples.length - 1 : currentPosition - 1;
-        container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
-        setCarouselPosition(newPosition);
-      }
-      return;
+    const container = document.getElementById('carousel-container');
+    if (container) {
+      const cardWidth = isMobile ? 320 : 400;
+      const currentPosition = Math.round(container.scrollLeft / cardWidth);
+      const newPosition = currentPosition === 0 ? featuredProjects.length - 1 : currentPosition - 1;
+      container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
+      setCarouselPosition(newPosition);
     }
-    setCarouselPosition((p) => (p - 1 + beforeAfterExamples.length) % beforeAfterExamples.length);
   };
 
   const scrollRight = () => {
-    if (isMobile) {
-      const container = document.getElementById('carousel-container');
-      if (container) {
-        const cardWidth = 320;
-        const currentPosition = Math.round(container.scrollLeft / cardWidth);
-        const newPosition = currentPosition === beforeAfterExamples.length - 1 ? 0 : currentPosition + 1;
-        container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
-        setCarouselPosition(newPosition);
-      }
-      return;
+    const container = document.getElementById('carousel-container');
+    if (container) {
+      const cardWidth = isMobile ? 320 : 400;
+      const currentPosition = Math.round(container.scrollLeft / cardWidth);
+      const newPosition = currentPosition === featuredProjects.length - 1 ? 0 : currentPosition + 1;
+      container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
+      setCarouselPosition(newPosition);
     }
-    setCarouselPosition((p) => (p + 1) % beforeAfterExamples.length);
   };
 
-  const goToSlide = (index: number) => {
+  const goToSlide = (index) => {
     const container = document.getElementById('carousel-container');
     if (container) {
       const cardWidth = isMobile ? 320 : 400;
@@ -206,9 +241,7 @@ export default function Home() {
               <span className="text-teal-600">あとはプロに任せるだけ。</span>
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 sm:mb-12 leading-relaxed px-4">
-              専門いらず・5秒で見積
-              <br />
-              Before / After 写真を比較するだけで完成イメージを直感的に掴める
+              100室超の実績が証明。大家目線で厳選した"安価で効果的"リフォームを写真から選ぶだけ。
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 px-4">
               <Link href="/contact" className="bg-teal-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-lg text-lg sm:text-xl font-semibold hover:bg-teal-700 transition-all duration-200 transform hover:scale-105 shadow-lg whitespace-nowrap cursor-pointer mb-6 lg:mb-8 w-full sm:w-52 sm:h-16 flex items-center justify-center">
@@ -250,95 +283,78 @@ export default function Home() {
             </button>
 
             {/* レスポンシブカルーセルコンテナ */}
-            {isMobile ? (
-              <div
-                id="carousel-container"
-                className={`flex overflow-x-auto gap-4 lg:gap-8 pb-4 scrollbar-hide scroll-smooth px-4 lg:px-16`}
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {beforeAfterExamples.map((project, index) => (
+            <div
+              id="carousel-container"
+              className={`flex overflow-x-auto gap-4 lg:gap-8 pb-4 scrollbar-hide scroll-smooth px-4 lg:px-16 ${isMobile ? '' : 'justify-start'}`}
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {featuredProjects.map((project, index) => {
+                const isCenter = !isMobile && carouselPosition === index;
+                const isSide = !isMobile && Math.abs(carouselPosition - index) === 1;
+                const isVisible = !isMobile && Math.abs(carouselPosition - index) <= 1;
+
+                return (
                   <div
                     key={index}
                     onClick={() => openModal(project)}
-                    className={`flex-shrink-0 transition-all duration-300 cursor-pointer group bg-gray-50 rounded-2xl shadow-sm hover:shadow-lg transform hover:-translate-y-1 w-72 p-4`}
+                    className={`flex-shrink-0 transition-all duration-300 cursor-pointer group bg-gray-50 rounded-2xl shadow-sm hover:shadow-lg transform hover:-translate-y-1 ${isMobile ? 'w-72 p-4' : isCenter ? 'w-[700px] lg:w-[800px] opacity-100 scale-100 p-6 lg:p-8 z-10 relative' : isSide ? 'w-[280px] lg:w-[320px] opacity-40 scale-85 hover:opacity-60 p-4 lg:p-5' : 'w-[200px] lg:w-[250px] opacity-20 scale-75 p-3 lg:p-4'} ${!isMobile && !isVisible ? 'hidden' : ''}`}
                   >
                     <div className="grid grid-cols-2 gap-2 lg:gap-4 mb-3 lg:mb-6">
                       <div className="relative">
-                        <div className={`absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md text-xs`}>
+                        <div
+                          className={`absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md ${isMobile || isCenter ? 'text-xs' : isSide ? 'text-xs scale-90' : 'text-xs scale-75'}`}
+                        >
                           BEFORE
                         </div>
-                        <img src={project.before} alt="Before" className={`w-full h-24 object-cover object-top rounded-xl shadow-md`} />
+                        <img
+                          src={project.before}
+                          alt="Before renovation"
+                          className={`w-full object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 ${isMobile ? 'h-24' : isCenter ? 'h-72 lg:h-80' : isSide ? 'h-32 lg:h-36' : 'h-24 lg:h-28'}`}
+                        />
                       </div>
                       <div className="relative">
-                        <div className={`absolute top-2 left-2 bg-teal-600 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md text-xs`}>
+                        <div
+                          className={`absolute top-2 left-2 bg-teal-600 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md ${isMobile || isCenter ? 'text-xs' : isSide ? 'text-xs scale-90' : 'text-xs scale-75'}`}
+                        >
                           AFTER
                         </div>
-                        <img src={project.after} alt="After" className={`w-full h-24 object-cover object-top rounded-xl shadow-md`} />
+                        <img
+                          src={project.after}
+                          alt="After renovation"
+                          className={`w-full object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 ${isMobile ? 'h-24' : isCenter ? 'h-72 lg:h-80' : isSide ? 'h-32 lg:h-36' : 'h-24 lg:h-28'}`}
+                        />
                       </div>
                     </div>
+
                     <div className="text-center">
-                      <h3 className={`font-bold mb-2 line-clamp-2 text-sm`}>{project.title}</h3>
+                      <h3
+                        className={`font-bold mb-2 line-clamp-2 ${isMobile ? 'text-sm' : isCenter ? 'text-xl lg:text-2xl' : isSide ? 'text-sm lg:text-base' : 'text-xs lg:text-sm'}`}
+                      >
+                        {project.title}
+                      </h3>
+                      <div
+                        className={`flex justify-center items-center space-x-2 lg:space-x-4 text-gray-600 ${isMobile ? 'text-xs' : isCenter ? 'text-base' : isSide ? 'text-sm' : 'text-xs'}`}
+                      >
+                        {(isCenter || isMobile) && (
+                          <>
+                            <span className="text-teal-600 font-bold">{project.price}</span>
+                            <span>•</span>
+                            <span>{project.period}</span>
+                          </>
+                        )}
+                        {isSide && !isMobile && (
+                          <span className="text-teal-600 font-bold text-sm">{project.price}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              (() => {
-                const total = beforeAfterExamples.length;
-                const prevIndex = (carouselPosition - 1 + total) % total;
-                const nextIndex = (carouselPosition + 1) % total;
-                const indices = [prevIndex, carouselPosition, nextIndex];
-                return (
-                  <div className="flex justify-center gap-8 pb-4 px-16">
-                    {indices.map((idx, i) => {
-                      const project = beforeAfterExamples[idx];
-                      const isCenter = i === 1;
-                      const isSide = !isCenter;
-                      return (
-                        <div
-                          key={idx}
-                          onClick={() => openModal(project)}
-                          className={`transition-all duration-300 cursor-pointer group bg-gray-50 rounded-2xl shadow-sm hover:shadow-lg transform hover:-translate-y-1 ${isCenter ? 'w-[700px] lg:w-[800px] opacity-100 scale-100 p-8 z-10 relative' : 'w-[280px] lg:w-[320px] opacity-40 scale-85 hover:opacity-60 p-5'}`}
-                        >
-                          <div className="grid grid-cols-2 gap-4 mb-6">
-                            <div className="relative">
-                              <div className={`absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md ${isCenter ? 'text-xs' : 'text-xs scale-90'}`}>
-                                BEFORE
-                              </div>
-                              <img src={project.before} alt="Before renovation" className={`w-full object-cover object-top rounded-xl shadow-md ${isCenter ? 'h-64' : 'h-36'}`} />
-                            </div>
-                            <div className="relative">
-                              <div className={`absolute top-2 left-2 bg-teal-600 text-white px-2 py-1 rounded-full font-semibold z-10 shadow-md ${isCenter ? 'text-xs' : 'text-xs scale-90'}`}>
-                                AFTER
-                              </div>
-                              <img src={project.after} alt="After renovation" className={`w-full object-cover object-top rounded-xl shadow-md ${isCenter ? 'h-64' : 'h-36'}`} />
-                            </div>
-                          </div>
-                          <div className="text-center">
-                            <h3 className={`font-bold mb-2 line-clamp-2 ${isCenter ? 'text-2xl' : 'text-base'}`}>{project.title}</h3>
-                            <div className={`flex justify-center items-center space-x-4 text-gray-600 ${isCenter ? 'text-base' : 'text-sm'}`}>
-                              {isCenter ? (
-                                <>
-                                  <span className="text-teal-600 font-bold">{project.price}</span>
-                                  <span>•</span>
-                                  <span>{project.period}</span>
-                                </>
-                              ) : (
-                                <span className="text-teal-600 font-bold text-sm">{project.price}</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
                 );
-              })()
-            )}
+              })}
+            </div>
 
             {/* レスポンシブプログレスバー */}
             <div className="flex justify-center mt-6 lg:mt-8 space-x-2">
-              {Array.from({ length: beforeAfterExamples.length }).map((_, index) => (
+              {Array.from({ length: featuredProjects.length }).map((_, index) => (
                 <div
                   key={index}
                   className={`h-1 rounded-full transition-all duration-200 cursor-pointer ${isMobile ? index === Math.floor(carouselPosition) : carouselPosition === index ? 'bg-teal-600 w-6 lg:w-8' : 'bg-gray-300 w-3 lg:w-4 hover:bg-gray-400'}`}
@@ -356,7 +372,7 @@ export default function Home() {
               <div className="flex items-center space-x-1">
                 <span>{carouselPosition + 1}</span>
                 <span>/</span>
-                <span>{beforeAfterExamples.length}</span>
+                <span>{featuredProjects.length}</span>
               </div>
             </div>
           </div>
@@ -394,78 +410,27 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* 3列のBefore/After画像セクション */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
-                {/* 左側: 矢印の左のBefore/After */}
-                <div className="space-y-4">
-                  <div className="relative">
-                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-semibold z-10 shadow-lg">
-                      BEFORE
-                    </div>
-                    <img
-                      src={selectedProject.before}
-                      alt="Before renovation (left)"
-                      className="w-full h-32 sm:h-40 lg:h-48 xl:h-56 object-cover object-top rounded-xl shadow-lg"
-                    />
+              {/* レスポンシブ画像セクション */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 mb-6 lg:mb-8">
+                <div className="relative">
+                  <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-lg font-semibold z-10 shadow-lg">
+                    BEFORE
                   </div>
-                  <div className="relative">
-                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-teal-600 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-semibold z-10 shadow-lg">
-                      AFTER
-                    </div>
-                    <img
-                      src={selectedProject.after}
-                      alt="After renovation (left)"
-                      className="w-full h-32 sm:h-40 lg:h-48 xl:h-56 object-cover object-top rounded-xl shadow-lg"
-                    />
-                  </div>
+                  <img
+                    src={selectedProject.before}
+                    alt="Before renovation"
+                    className="w-full h-48 sm:h-64 lg:h-80 xl:h-96 object-cover object-top rounded-2xl shadow-lg"
+                  />
                 </div>
-
-                {/* 中央: メインのBefore/After（現在のサイズ） */}
-                <div className="space-y-4">
-                  <div className="relative">
-                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-lg font-semibold z-10 shadow-lg">
-                      BEFORE
-                    </div>
-                    <img
-                      src={selectedProject.before}
-                      alt="Before renovation (center)"
-                      className="w-full h-48 sm:h-64 lg:h-80 xl:h-96 object-cover object-top rounded-2xl shadow-lg"
-                    />
+                <div className="relative">
+                  <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-teal-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-lg font-semibold z-10 shadow-lg">
+                    AFTER
                   </div>
-                  <div className="relative">
-                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-teal-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-lg font-semibold z-10 shadow-lg">
-                      AFTER
-                    </div>
-                    <img
-                      src={selectedProject.after}
-                      alt="After renovation (center)"
-                      className="w-full h-48 sm:h-64 lg:h-80 xl:h-96 object-cover object-top rounded-2xl shadow-lg"
-                    />
-                  </div>
-                </div>
-
-                {/* 右側: 矢印の右のBefore/After */}
-                <div className="space-y-4">
-                  <div className="relative">
-                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-semibold z-10 shadow-lg">
-                      BEFORE
-                    </div>
-                    <img
-                      src={selectedProject.before}
-                      alt="Before renovation (right)"
-                      className="w-full h-32 sm:h-40 lg:h-48 xl:h-56 object-cover object-top rounded-xl shadow-lg"
-                    />
-                  </div>
-                  <div className="relative">
-                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-teal-600 text-white px-2 py-1 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-semibold z-10 shadow-lg">
-                      AFTER
-                    </div>
-                    <img
-                      src={selectedProject.after}
-                      alt="After renovation (right)"
-                      className="w-full h-32 sm:h-40 lg:h-48 xl:h-56 object-cover object-top rounded-xl shadow-lg"
-                    />
-                  </div>
+                  <img
+                    src={selectedProject.after}
+                    alt="After renovation"
+                    className="w-full h-48 sm:h-64 lg:h-80 xl:h-96 object-cover object-top rounded-2xl shadow-lg"
+                  />
                 </div>
               </div>
 
@@ -548,65 +513,72 @@ export default function Home() {
               5秒で見積もり
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 px-4">
-              広さと部屋タイプを選ぶだけで概算費用がわかります
+              簡単な条件入力で、実績に基づいた改装プランの料金をご確認いただけます
             </p>
           </div>
 
           <div className="bg-white rounded-2xl p-6 sm:p-8 lg:p-12 shadow-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-6 lg:mb-8">
-              <div>
-                <label className="block text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                  面積（㎡）
-                </label>
-                <input
-                  type="number"
-                  value={estimateData.area}
-                  onChange={(e) =>
-                    setEstimateData({ ...estimateData, area: e.target.value })
-                  }
-                  placeholder="例: 20"
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg border-2 border-gray-200 rounded-lg focus:border-teal-600 focus:outline-none transition-colors duration-200"
-                />
-              </div>
-              <div>
-                <label className="block text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                  部屋タイプ
-                </label>
-                <div className="relative">
-                  <select
-                    value={estimateData.roomType}
-                    onChange={(e) =>
-                      setEstimateData({ ...estimateData, roomType: e.target.value })
-                    }
-                    className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg border-2 border-gray-200 rounded-lg focus:border-teal-600 focus:outline-none appearance-none bg-white pr-10 sm:pr-12 transition-colors duration-200 cursor-pointer"
-                  >
-                    <option value="living">リビング・居室</option>
-                    <option value="kitchen">キッチン</option>
-                    <option value="bathroom">浴室・洗面所</option>
-                  </select>
-                  <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <i className="ri-arrow-down-s-line text-lg sm:text-xl text-gray-500"></i>
+            <div className="mb-6 lg:mb-8">
+              <label className="block text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">施工面積（㎡）</label>
+              <input
+                type="number"
+                value={estimateData.area}
+                onChange={(e) => setEstimateData({ ...estimateData, area: e.target.value })}
+                placeholder="例：20"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg border-2 border-gray-200 rounded-lg focus:border-teal-600 focus:outline-none transition-colors duration-200"
+              />
+            </div>
+
+            {/* オプション選択 */}
+            <div className="mb-6 lg:mb-8">
+              <label className="block text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">オプション（複数選択可）</label>
+              <div className="grid grid-cols-1 gap-4">
+                {optionServices.map((option) => (
+                  <div key={option.id} className="flex items-start space-x-3 p-4 bg-white rounded-lg border-2 border-gray-200 hover:border-teal-300 transition-colors duration-200">
+                    <input
+                      type="checkbox"
+                      id={option.id}
+                      checked={estimateData.selectedOptions.includes(option.id)}
+                      onChange={() => handleOptionChange(option.id)}
+                      className="mt-1 w-5 h-5 text-teal-600 border-2 border-gray-300 rounded focus:ring-teal-500 focus:ring-2"
+                    />
+                    <div className="flex-1">
+                      <label 
+                        htmlFor={option.id} 
+                        className="block text-sm sm:text-base font-medium text-gray-900 cursor-pointer"
+                      >
+                        {option.name}
+                      </label>
+                      <div className="text-teal-600 font-semibold text-sm sm:text-base mt-1">
+                        {option.displayPrice}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
 
             <div className="text-center">
               <button
-                onClick={handleEstimate}
+                onClick={calculateEstimate}
                 className="bg-orange-400 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-lg text-lg sm:text-xl font-semibold hover:bg-orange-500 transition-all duration-200 transform hover:scale-105 shadow-lg whitespace-nowrap cursor-pointer mb-6 lg:mb-8 w-full sm:w-auto"
               >
                 概算見積を表示
               </button>
 
-              {showEstimate && estimateData.area && (
+              {estimateResult && estimateData.area && (
                 <div className="bg-teal-50 rounded-2xl p-6 lg:p-8 border-2 border-teal-200">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-teal-600 mb-2">
-                    {calculateEstimate().toLocaleString()}円
+                    {estimateResult.toLocaleString()}円
                   </div>
-                  <p className="text-base sm:text-lg text-gray-700 mb-4 sm:mb-6">
+                  <p className="text-base sm:text-lg text-gray-700 mb-2">
                     概算費用（税込）
                   </p>
+                  {estimateData.selectedOptions.length > 0 && (
+                    <div className="text-sm text-gray-600 mb-4">
+                      基本料金 + 選択オプション料金含む
+                    </div>
+                  )}
                   <Link href="/contact" className="inline-block bg-teal-600 text-white px-6 sm:px-10 py-2 sm:py-3 rounded-lg text-base sm:text-lg font-semibold hover:bg-teal-700 transition-all duration-200 whitespace-nowrap cursor-pointer">
                     詳細見積を依頼する
                   </Link>
@@ -622,7 +594,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 lg:mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
-              "専門いらず"の直感体験
+              "品番いらず"の直感体験
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 px-4">
               専門知識がなくても、写真を選ぶだけで理想のリノベーションが実現
@@ -718,7 +690,7 @@ export default function Home() {
                 >
                   STEP {item.step}
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+                <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">
                   {item.title}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
@@ -740,7 +712,7 @@ export default function Home() {
       <section className="py-12 sm:py-16 lg:py-24 bg-teal-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
-            専門ゼロ、写真ひとつで。
+            品番ゼロ、写真ひとつで。
           </h2>
           <p className="text-lg sm:text-xl lg:text-2xl mb-8 sm:mb-12 opacity-90 leading-relaxed px-4">
             リノベ初心者の大家さんにも

@@ -8,14 +8,9 @@ const __dirname = dirname(__filename);
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
-import { next } from '@eslint/js';
 
-export default [
-  next(),
-];
-/*
 const eslintConfig = [
-//  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off"
@@ -24,4 +19,3 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
-*/
