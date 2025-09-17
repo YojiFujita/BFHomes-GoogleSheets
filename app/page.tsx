@@ -13,7 +13,7 @@ export default function Home() {
   const [estimateResult, setEstimateResult] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [carouselPosition, setCarouselPosition] = useState(0);
+  const [carouselPosition, setCarouselPosition] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
   const beforeAfterExamples = [
@@ -98,15 +98,8 @@ export default function Home() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
       if (window.innerWidth >= 1024 && featuredProjects.length > 0) {
-        // Start with first image (index 0) for simpler logic
-        setCarouselPosition(0);
-        setTimeout(() => {
-          const container = document.getElementById('carousel-container');
-          if (container) {
-            const cardWidth = 400;
-            container.scrollTo({ left: 0, behavior: 'smooth' });
-          }
-        }, 100);
+        // Start with middle image (index 1) for better UX
+        setCarouselPosition(1);
       }
     };
     checkMobile();
@@ -308,6 +301,7 @@ export default function Home() {
                 const isCenter = !isMobile && carouselPosition === index;
                 const isSide = !isMobile && Math.abs(carouselPosition - index) === 1;
                 const isVisible = !isMobile && Math.abs(carouselPosition - index) <= 1;
+
 
                 return (
                   <div
