@@ -13,19 +13,19 @@ export default function Home() {
   const [estimateResult, setEstimateResult] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [carouselPosition, setCarouselPosition] = useState(0);
+  const [carouselPosition, setCarouselPosition] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
       if (window.innerWidth >= 1024) {
-        setCarouselPosition(0);
+        setCarouselPosition(1);
         setTimeout(() => {
           const container = document.getElementById('carousel-container');
           if (container) {
             const cardWidth = 400;
-            container.scrollTo({ left: cardWidth * 0, behavior: 'smooth' });
+            container.scrollTo({ left: cardWidth * 1, behavior: 'smooth' });
           }
         }, 100);
       }
@@ -286,7 +286,7 @@ export default function Home() {
             {/* レスポンシブカルーセルコンテナ */}
             <div
               id="carousel-container"
-              className={`flex overflow-x-auto gap-4 lg:gap-8 pb-4 scrollbar-hide scroll-smooth px-4 lg:px-16 ${isMobile ? '' : 'justify-center'}`}
+              className={`flex overflow-x-auto gap-4 lg:gap-8 pb-4 scrollbar-hide scroll-smooth px-4 lg:px-16 ${isMobile ? '' : 'flex-nowrap justify-start'}`}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {featuredProjects.map((project, index) => {
