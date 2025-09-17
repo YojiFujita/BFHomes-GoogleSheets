@@ -301,7 +301,7 @@ export default function Home() {
             {/* レスポンシブカルーセルコンテナ */}
             <div
               id="carousel-container"
-              className={`flex gap-4 lg:gap-8 pb-4 px-4 lg:px-16 ${isMobile ? 'overflow-x-auto scrollbar-hide scroll-smooth' : 'justify-center items-center'}`}
+              className={`flex gap-2 lg:gap-4 pb-4 px-2 lg:px-8 ${isMobile ? 'overflow-x-auto scrollbar-hide scroll-smooth' : 'justify-center items-center'}`}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {featuredProjects.map((project, index) => {
@@ -317,10 +317,10 @@ export default function Home() {
                       isMobile
                         ? 'w-72 p-4'
                         : isCenter
-                          ? 'w-[700px] lg:w-[800px] opacity-100 scale-100 p-6 lg:p-8 z-10 relative'
+                          ? 'w-[450px] lg:w-[500px] opacity-100 scale-100 p-4 lg:p-6 z-10 relative'
                           : isSide
-                            ? 'w-[280px] lg:w-[320px] opacity-40 scale-85 hover:opacity-60 p-4 lg:p-5'
-                            : 'w-[200px] lg:w-[250px] opacity-20 scale-75 p-3 lg:p-4'
+                            ? 'w-[240px] lg:w-[280px] opacity-40 scale-85 hover:opacity-60 p-3 lg:p-4'
+                            : 'w-[180px] lg:w-[220px] opacity-20 scale-75 p-2 lg:p-3'
                     } ${!isMobile && !isVisible ? 'hidden' : ''}`}
                   >
                     <div className="grid grid-cols-2 gap-2 lg:gap-4 mb-3 lg:mb-6">
@@ -333,7 +333,7 @@ export default function Home() {
                         <img
                           src={project.before}
                           alt="Before renovation"
-                          className={`w-full object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 ${isMobile ? 'h-24' : isCenter ? 'h-72 lg:h-80' : isSide ? 'h-32 lg:h-36' : 'h-24 lg:h-28'}`}
+                          className={`w-full object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 ${isMobile ? 'h-24' : isCenter ? 'h-48 lg:h-56' : isSide ? 'h-28 lg:h-32' : 'h-20 lg:h-24'}`}
                         />
                       </div>
                       <div className="relative">
@@ -345,14 +345,14 @@ export default function Home() {
                         <img
                           src={project.after}
                           alt="After renovation"
-                          className={`w-full object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 ${isMobile ? 'h-24' : isCenter ? 'h-72 lg:h-80' : isSide ? 'h-32 lg:h-36' : 'h-24 lg:h-28'}`}
+                          className={`w-full object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200 ${isMobile ? 'h-24' : isCenter ? 'h-48 lg:h-56' : isSide ? 'h-28 lg:h-32' : 'h-20 lg:h-24'}`}
                         />
                       </div>
                     </div>
 
                     <div className="text-center">
                       <h3
-                        className={`font-bold mb-2 line-clamp-2 ${isMobile ? 'text-sm' : isCenter ? 'text-xl lg:text-2xl' : isSide ? 'text-sm lg:text-base' : 'text-xs lg:text-sm'}`}
+                        className={`font-bold mb-2 line-clamp-2 ${isMobile ? 'text-sm' : isCenter ? 'text-lg lg:text-xl' : isSide ? 'text-xs lg:text-sm' : 'text-xs'}`}
                       >
                         {project.title}
                       </h3>
