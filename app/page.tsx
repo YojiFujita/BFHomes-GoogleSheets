@@ -16,25 +16,6 @@ export default function Home() {
   const [carouselPosition, setCarouselPosition] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-      if (window.innerWidth >= 1024) {
-        setCarouselPosition(1);
-        setTimeout(() => {
-          const container = document.getElementById('carousel-container');
-          if (container) {
-            const cardWidth = 400;
-            container.scrollTo({ left: cardWidth * 1, behavior: 'smooth' });
-          }
-        }, 100);
-      }
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   const beforeAfterExamples = [
     {
       id: 1,
@@ -112,6 +93,27 @@ export default function Home() {
 
   // featuredがtrueの事例のみフィルタリング
   const featuredProjects = beforeAfterExamples.filter(project => project.featured);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth >= 1024 && featuredProjects.length > 0) {
+        // Ensure we have featured projects and set a valid position
+        const validPosition = featuredProjects.length > 1 ? 1 : 0;
+        setCarouselPosition(validPosition);
+        setTimeout(() => {
+          const container = document.getElementById('carousel-container');
+          if (container) {
+            const cardWidth = 400;
+            container.scrollTo({ left: cardWidth * validPosition, behavior: 'smooth' });
+          }
+        }, 100);
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [featuredProjects.length]);
 
   const optionServices = [
     { id: 'ceiling', name: '天井張替え', price: 30000, displayPrice: '30,000円～' },
@@ -298,7 +300,15 @@ export default function Home() {
                   <div
                     key={index}
                     onClick={() => openModal(project)}
-                    className={`flex-shrink-0 transition-all duration-300 cursor-pointer group bg-gray-50 rounded-2xl shadow-sm hover:shadow-lg transform hover:-translate-y-1 ${isMobile ? 'w-72 p-4' : isCenter ? 'w-[700px] lg:w-[800px] opacity-100 scale-100 p-6 lg:p-8 z-10 relative' : isSide ? 'w-[280px] lg:w-[320px] opacity-40 scale-85 hover:opacity-60 p-4 lg:p-5' : 'w-[200px] lg:w-[250px] opacity-20 scale-75 p-3 lg:p-4'} ${!isMobile && !isVisible ? 'hidden' : ''}`}
+                    className={`flex-shrink-0 transition-all duration-300 cursor-pointer group bg-gray-50 rounded-2xl shadow-sm hover:shadow-lg transform hover:-translate-y-1 ${
+                      isMobile
+                        ? 'w-72 p-4'
+                        : isCenter
+                          ? 'w-[700px] lg:w-[800px] opacity-100 scale-100 p-6 lg:p-8 z-10 relative'
+                          : isSide
+                            ? 'w-[280px] lg:w-[320px] opacity-40 scale-85 hover:opacity-60 p-4 lg:p-5'
+                            : 'w-[200px] lg:w-[250px] opacity-20 scale-75 p-3 lg:p-4'
+                    } ${!isMobile && !isVisible ? 'hidden' : ''}`}
                   >
                     <div className="grid grid-cols-2 gap-2 lg:gap-4 mb-3 lg:mb-6">
                       <div className="relative">
