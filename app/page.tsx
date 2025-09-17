@@ -13,7 +13,7 @@ export default function Home() {
   const [estimateResult, setEstimateResult] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [carouselPosition, setCarouselPosition] = useState(1);
+  const [carouselPosition, setCarouselPosition] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
   const beforeAfterExamples = [
@@ -98,14 +98,13 @@ export default function Home() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
       if (window.innerWidth >= 1024 && featuredProjects.length > 0) {
-        // Ensure we have featured projects and set a valid position
-        const validPosition = featuredProjects.length > 1 ? 1 : 0;
-        setCarouselPosition(validPosition);
+        // Start with first image (index 0) for simpler logic
+        setCarouselPosition(0);
         setTimeout(() => {
           const container = document.getElementById('carousel-container');
           if (container) {
             const cardWidth = 400;
-            container.scrollTo({ left: cardWidth * validPosition, behavior: 'smooth' });
+            container.scrollTo({ left: 0, behavior: 'smooth' });
           }
         }, 100);
       }
@@ -168,34 +167,48 @@ export default function Home() {
   };
 
   const scrollLeft = () => {
-    const container = document.getElementById('carousel-container');
-    if (container) {
-      const cardWidth = isMobile ? 320 : 400;
-      const currentPosition = Math.round(container.scrollLeft / cardWidth);
-      const newPosition = currentPosition === 0 ? featuredProjects.length - 1 : currentPosition - 1;
-      container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
+    if (isMobile) {
+      const container = document.getElementById('carousel-container');
+      if (container) {
+        const cardWidth = 320;
+        const currentPosition = Math.round(container.scrollLeft / cardWidth);
+        const newPosition = currentPosition === 0 ? featuredProjects.length - 1 : currentPosition - 1;
+        container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
+        setCarouselPosition(newPosition);
+      }
+    } else {
+      // Desktop: just change position for visual effect
+      const newPosition = carouselPosition === 0 ? featuredProjects.length - 1 : carouselPosition - 1;
       setCarouselPosition(newPosition);
     }
   };
 
   const scrollRight = () => {
-    const container = document.getElementById('carousel-container');
-    if (container) {
-      const cardWidth = isMobile ? 320 : 400;
-      const currentPosition = Math.round(container.scrollLeft / cardWidth);
-      const newPosition = currentPosition === featuredProjects.length - 1 ? 0 : currentPosition + 1;
-      container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
+    if (isMobile) {
+      const container = document.getElementById('carousel-container');
+      if (container) {
+        const cardWidth = 320;
+        const currentPosition = Math.round(container.scrollLeft / cardWidth);
+        const newPosition = currentPosition === featuredProjects.length - 1 ? 0 : currentPosition + 1;
+        container.scrollTo({ left: cardWidth * newPosition, behavior: 'smooth' });
+        setCarouselPosition(newPosition);
+      }
+    } else {
+      // Desktop: just change position for visual effect
+      const newPosition = carouselPosition === featuredProjects.length - 1 ? 0 : carouselPosition + 1;
       setCarouselPosition(newPosition);
     }
   };
 
   const goToSlide = (index: number) => {
-    const container = document.getElementById('carousel-container');
-    if (container) {
-      const cardWidth = isMobile ? 320 : 400;
-      container.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
-      setCarouselPosition(index);
+    if (isMobile) {
+      const container = document.getElementById('carousel-container');
+      if (container) {
+        const cardWidth = 320;
+        container.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
+      }
     }
+    setCarouselPosition(index);
   };
 
   return (
@@ -288,7 +301,7 @@ export default function Home() {
             {/* レスポンシブカルーセルコンテナ */}
             <div
               id="carousel-container"
-              className={`flex overflow-x-auto gap-4 lg:gap-8 pb-4 scrollbar-hide scroll-smooth px-4 lg:px-16 ${isMobile ? '' : 'flex-nowrap justify-start'}`}
+              className={`flex gap-4 lg:gap-8 pb-4 px-4 lg:px-16 ${isMobile ? 'overflow-x-auto scrollbar-hide scroll-smooth' : 'justify-center items-center'}`}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {featuredProjects.map((project, index) => {
