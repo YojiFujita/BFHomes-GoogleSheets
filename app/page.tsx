@@ -298,10 +298,26 @@ export default function Home() {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {featuredProjects.map((project, index) => {
-                const isCenter = !isMobile && carouselPosition === index;
-                const isSide = !isMobile && Math.abs(carouselPosition - index) === 1;
-                const isVisible = !isMobile && Math.abs(carouselPosition - index) <= 1;
+                // For desktop carousel: always show 3 images in scroll-like arrangement
+                let displayPosition: number = 0;
+                if (!isMobile) {
+                  // Calculate relative position for 3-image display
+                  if (carouselPosition === 0) {
+                    // Position 0: show [2, 0, 1] where 0 is center
+                    displayPosition = index === 0 ? 0 : index === 1 ? 1 : -1;
+                  } else if (carouselPosition === 1) {
+                    // Position 1: show [0, 1, 2] where 1 is center
+                    displayPosition = index - 1;
+                  } else if (carouselPosition === 2) {
+                    // Position 2: show [1, 2, 0] where 2 is center
+                    displayPosition = index === 2 ? 0 : index === 0 ? 1 : -1;
+                  }
+                } else {
+                  displayPosition = index;
+                }
 
+                const isCenter = !isMobile && displayPosition === 0;
+                const isSide = !isMobile && Math.abs(displayPosition) === 1;
 
                 return (
                   <div
@@ -314,8 +330,9 @@ export default function Home() {
                           ? 'w-[450px] lg:w-[500px] opacity-100 scale-100 p-4 lg:p-6 z-10 relative'
                           : isSide
                             ? 'w-[240px] lg:w-[280px] opacity-40 scale-85 hover:opacity-60 p-3 lg:p-4'
-                            : 'w-[180px] lg:w-[220px] opacity-20 scale-75 p-2 lg:p-3'
-                    } ${!isMobile && !isVisible ? 'hidden' : ''}`}
+                            : 'hidden'
+                    }`}
+                    style={!isMobile ? { order: displayPosition + 1 } : {}}
                   >
                     <div className="grid grid-cols-2 gap-2 lg:gap-4 mb-3 lg:mb-6">
                       <div className="relative">
