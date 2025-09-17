@@ -6,7 +6,7 @@ import { useState } from 'react';
 export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
 
   const categories = [
     { id: 'all', name: 'すべて', icon: 'ri-home-line' },
@@ -194,7 +194,7 @@ export default function Gallery() {
 
   const popularProjects = projects.filter(project => project.popular);
 
-  const openModal = (project) => {
+  const openModal = (project: any) => {
     setSelectedProject(project);
     setModalOpen(true);
     document.body.style.overflow = 'hidden';

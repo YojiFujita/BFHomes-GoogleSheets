@@ -8,11 +8,11 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [estimateData, setEstimateData] = useState({
     area: '',
-    selectedOptions: []
+    selectedOptions: [] as string[]
   });
   const [estimateResult, setEstimateResult] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
   const [carouselPosition, setCarouselPosition] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -119,7 +119,7 @@ export default function Home() {
     { id: 'water', name: '水回り簡易改修（キッチン・洗面台など）', price: 50000, displayPrice: '50,000円～' }
   ];
 
-  const handleOptionChange = (optionId) => {
+  const handleOptionChange = (optionId: string) => {
     setEstimateData(prev => ({
       ...prev,
       selectedOptions: prev.selectedOptions.includes(optionId)
@@ -148,11 +148,12 @@ export default function Home() {
 
   const handleEstimate = () => {
     if (estimateData.area) {
-      setShowEstimate(true);
+      // Estimate calculation logic could go here
+      console.log('Calculating estimate for:', estimateData);
     }
   };
 
-  const openModal = (project) => {
+  const openModal = (project: any) => {
     setSelectedProject(project);
     setModalOpen(true);
     document.body.style.overflow = 'hidden';
@@ -186,7 +187,7 @@ export default function Home() {
     }
   };
 
-  const goToSlide = (index) => {
+  const goToSlide = (index: number) => {
     const container = document.getElementById('carousel-container');
     if (container) {
       const cardWidth = isMobile ? 320 : 400;

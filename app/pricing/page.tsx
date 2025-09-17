@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState('basic');
   const [area, setArea] = useState('');
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [estimateResult, setEstimateResult] = useState<number | null>(null);
 
   const basicServices = [
@@ -36,7 +36,7 @@ export default function PricingPage() {
     { name: '緊急対応', price: '15,000円', description: '工事後の緊急トラブル対応' }
   ];
 
-  const handleOptionChange = (optionId) => {
+  const handleOptionChange = (optionId: string) => {
     setSelectedOptions(prev => {
       if (prev.includes(optionId)) {
         return prev.filter(id => id !== optionId);
