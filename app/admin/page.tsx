@@ -37,11 +37,20 @@ export default function AdminPage() {
   const [editingFaq, setEditingFaq] = useState<FAQ | null>(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showFaqModal, setShowFaqModal] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'unsaved' | 'saving'>('saved');
 
   // 初期データの読み込み
   useEffect(() => {
-    // プロジェクトデータの初期化
-    const initialProjects: Project[] = [
+    // ローカルストレージからデータを読み込み
+    const savedProjects = localStorage.getItem('admin_projects');
+    const savedFaqs = localStorage.getItem('admin_faqs');
+
+    if (savedProjects) {
+      setProjects(JSON.parse(savedProjects));
+    } else {
+      // プロジェクトデータの初期化
+      const initialProjects: Project[] = [
       {
         id: 1,
         title: "伝統的な和室から現代的なリビングへ",
@@ -72,10 +81,15 @@ export default function AdminPage() {
         popular: false,
         featured: true
       }
-    ];
+      ];
+      setProjects(initialProjects);
+    }
 
-    // FAQ データの初期化
-    const initialFaqs: FAQ[] = [
+    if (savedFaqs) {
+      setFaqs(JSON.parse(savedFaqs));
+    } else {
+      // FAQ データの初期化
+      const initialFaqs: FAQ[] = [
       {
         id: 1,
         question: "見積もりは無料ですか？",
@@ -100,11 +114,27 @@ export default function AdminPage() {
         order: 3,
         visible: true
       }
-    ];
-
-    setProjects(initialProjects);
-    setFaqs(initialFaqs);
+      ];
+      setFaqs(initialFaqs);
+    }
   }, []);
+
+  // ローカルストレージに保存
+  const saveToLocalStorage = () => {
+    setSaveStatus('saving');
+    try {
+      localStorage.setItem('admin_projects', JSON.stringify(projects));
+      localStorage.setItem('admin_faqs', JSON.stringify(faqs));
+      localStorage.setItem('admin_data_timestamp', new Date().toISOString());
+      setSaveStatus('saved');
+      setHasUnsavedChanges(false);
+      alert('データをローカルストレージに保存しました。メイン画面に反映されます。');
+    } catch (error) {
+      console.error('保存エラー:', error);
+      setSaveStatus('unsaved');
+      alert('保存に失敗しました。');
+    }
+  };
 
   // プロジェクト保存
   const handleSaveProject = (project: Project) => {
@@ -118,6 +148,8 @@ export default function AdminPage() {
     }
     setShowProjectModal(false);
     setEditingProject(null);
+    setHasUnsavedChanges(true);
+    setSaveStatus('unsaved');
   };
 
   // FAQ保存
@@ -132,12 +164,16 @@ export default function AdminPage() {
     }
     setShowFaqModal(false);
     setEditingFaq(null);
+    setHasUnsavedChanges(true);
+    setSaveStatus('unsaved');
   };
 
   // プロジェクト削除
   const handleDeleteProject = (id: number) => {
     if (confirm('この事例を削除しますか？')) {
       setProjects(projects.filter(p => p.id !== id));
+      setHasUnsavedChanges(true);
+      setSaveStatus('unsaved');
     }
   };
 
@@ -145,6 +181,8 @@ export default function AdminPage() {
   const handleDeleteFaq = (id: number) => {
     if (confirm('このFAQを削除しますか？')) {
       setFaqs(faqs.filter(f => f.id !== id));
+      setHasUnsavedChanges(true);
+      setSaveStatus('unsaved');
     }
   };
 
@@ -161,11 +199,47 @@ export default function AdminPage() {
               <span className="ml-4 px-3 py-1 bg-red-100 text-red-800 text-sm font-semibold rounded-full">
                 管理画面
               </span>
+              {/* 保存状態表示 */}
+              <div className="ml-4 flex items-center">
+                {saveStatus === 'saved' && !hasUnsavedChanges && (
+                  <span className="px-2 py-1 bg-green-100 text-green-800 text-sm rounded-full flex items-center">
+                    <i className="ri-check-line mr-1"></i>
+                    保存済み
+                  </span>
+                )}
+                {saveStatus === 'unsaved' && hasUnsavedChanges && (
+                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full flex items-center">
+                    <i className="ri-time-line mr-1"></i>
+                    未保存
+                  </span>
+                )}
+                {saveStatus === 'saving' && (
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded-full flex items-center">
+                    <i className="ri-loader-4-line mr-1 animate-spin"></i>
+                    保存中...
+                  </span>
+                )}
+              </div>
             </div>
-            <Link href="/" className="text-gray-600 hover:text-gray-900 cursor-pointer">
-              <i className="ri-home-line text-xl mr-2"></i>
-              サイトに戻る
-            </Link>
+            <div className="flex items-center space-x-4">
+              {/* 保存ボタン */}
+              <button
+                onClick={saveToLocalStorage}
+                disabled={saveStatus === 'saving' || (!hasUnsavedChanges && saveStatus === 'saved')}
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 cursor-pointer ${
+                  saveStatus === 'saving' || (!hasUnsavedChanges && saveStatus === 'saved')
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-teal-600 text-white hover:bg-teal-700 transform hover:scale-105'
+                }`}
+              >
+                <i className="ri-save-line mr-2"></i>
+                {saveStatus === 'saving' ? '保存中...' : 'メイン画面に反映'}
+              </button>
+              <Link href="/" className="text-gray-600 hover:text-gray-900 cursor-pointer flex items-center">
+                <i className="ri-home-line text-xl mr-2"></i>
+                サイトに戻る
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -443,20 +517,55 @@ export default function AdminPage() {
 }
 
 // プロジェクト編集モーダルコンポーネント
-function ProjectModal({ 
-  project, 
-  onSave, 
-  onClose 
-}: { 
-  project: Project; 
-  onSave: (project: Project) => void; 
-  onClose: () => void; 
+function ProjectModal({
+  project,
+  onSave,
+  onClose
+}: {
+  project: Project;
+  onSave: (project: Project) => void;
+  onClose: () => void;
 }) {
   const [formData, setFormData] = useState(project);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 画像が設定されているかチェック
+    if (!formData.before || !formData.after) {
+      alert('Before画像とAfter画像の両方を設定してください。');
+      return;
+    }
+
     onSave(formData);
+  };
+
+  // 画像ファイルを選択してBase64に変換する関数
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>, imageType: 'before' | 'after') => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // ファイルサイズチェック（5MB以下）
+      if (file.size > 5 * 1024 * 1024) {
+        alert('ファイルサイズは5MB以下にしてください。');
+        return;
+      }
+
+      // 画像ファイルかどうかチェック
+      if (!file.type.startsWith('image/')) {
+        alert('画像ファイルを選択してください。');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target?.result as string;
+        setFormData({
+          ...formData,
+          [imageType]: base64String
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -510,32 +619,66 @@ function ProjectModal({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Before画像URL *
+                  Before画像 *
                 </label>
-                <input
-                  type="url"
-                  required
-                  value={formData.before}
-                  onChange={(e) => setFormData({...formData, before: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                />
+                <div className="space-y-3">
+                  <input
+                    type="url"
+                    value={formData.before}
+                    onChange={(e) => setFormData({...formData, before: e.target.value})}
+                    placeholder="画像URLを入力またはファイルを選択"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500">または</span>
+                    <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-sm font-medium text-gray-700 transition-colors">
+                      <i className="ri-upload-line mr-1"></i>
+                      ファイルを選択
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'before')}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
                 {formData.before && (
-                  <img src={formData.before} alt="Before preview" className="mt-2 w-full h-32 object-cover rounded" />
+                  <div className="mt-3">
+                    <img src={formData.before} alt="Before preview" className="w-full h-32 object-cover rounded-lg border" />
+                  </div>
                 )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  After画像URL *
+                  After画像 *
                 </label>
-                <input
-                  type="url"
-                  required
-                  value={formData.after}
-                  onChange={(e) => setFormData({...formData, after: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                />
+                <div className="space-y-3">
+                  <input
+                    type="url"
+                    value={formData.after}
+                    onChange={(e) => setFormData({...formData, after: e.target.value})}
+                    placeholder="画像URLを入力またはファイルを選択"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500">または</span>
+                    <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-sm font-medium text-gray-700 transition-colors">
+                      <i className="ri-upload-line mr-1"></i>
+                      ファイルを選択
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'after')}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
                 {formData.after && (
-                  <img src={formData.after} alt="After preview" className="mt-2 w-full h-32 object-cover rounded" />
+                  <div className="mt-3">
+                    <img src={formData.after} alt="After preview" className="w-full h-32 object-cover rounded-lg border" />
+                  </div>
                 )}
               </div>
             </div>

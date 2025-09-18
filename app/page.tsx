@@ -16,7 +16,7 @@ export default function Home() {
   const [carouselPosition, setCarouselPosition] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
 
-  const beforeAfterExamples = [
+  const [beforeAfterExamples, setBeforeAfterExamples] = useState([
     {
       id: 1,
       before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20apartment%20interior%20with%20worn%20tatami%20mats%2C%20dark%20wooden%20floors%2C%20outdated%20lighting%20fixtures%2C%20cramped%20layout%2C%20dim%20natural%20lighting%2C%20dated%20wallpaper%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=800&height=600&seq=1&orientation=landscape",
@@ -89,10 +89,23 @@ export default function Home() {
       date: "2024年6月",
       featured: false
     }
-  ];
+  ]);
 
   // featuredがtrueの事例のみフィルタリング
   const featuredProjects = beforeAfterExamples.filter(project => project.featured);
+
+  // 管理者画面で保存されたデータを読み込み
+  useEffect(() => {
+    const savedProjects = localStorage.getItem('admin_projects');
+    if (savedProjects) {
+      try {
+        const projects = JSON.parse(savedProjects);
+        setBeforeAfterExamples(projects);
+      } catch (error) {
+        console.error('保存されたプロジェクトデータの読み込みに失敗しました:', error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
