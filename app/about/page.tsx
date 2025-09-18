@@ -2,35 +2,14 @@
 'use client';
 
 import Link from 'next/link';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export default function About() {
   return (
     <div className="min-h-screen bg-white">
       {/* ヘッダー */}
-      <header className="bg-gray-900 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14 sm:h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-lg sm:text-2xl font-pacifico text-white cursor-pointer">
-                Before-After Homes
-              </Link>
-            </div>
-            <nav className="hidden lg:flex items-center space-x-8">
-              <Link href="/about" className="text-white transition-colors duration-200 whitespace-nowrap cursor-pointer">サービス概要</Link>
-              <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors duration-200 whitespace-nowrap cursor-pointer">使い方</Link>
-              <Link href="/gallery" className="text-gray-300 hover:text-white transition-colors duration-200 whitespace-nowrap cursor-pointer">ギャラリー</Link>
-              <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors duration-200 whitespace-nowrap cursor-pointer">料金・見積</Link>
-              <Link href="/faq" className="text-gray-300 hover:text-white transition-colors duration-200 whitespace-nowrap cursor-pointer">よくある質問</Link>
-              <Link href="/contact" className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition-all duration-200 transform hover:scale-105 whitespace-nowrap cursor-pointer">
-                お問い合わせ
-              </Link>
-            </nav>
-            <button className="lg:hidden text-white p-2">
-              <i className="ri-menu-line text-xl"></i>
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header currentPage="サービス概要" />
 
       {/* ヒーローセクション */}
       <section className="relative bg-gray-50 py-16 lg:py-24 overflow-hidden">
@@ -43,8 +22,7 @@ export default function About() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              従来のリノベーションを
-革新する仕組み
+              従来のリノベーションを革新する仕組み
             </h1>
             <p className="text-xl sm:text-2xl text-gray-600 mb-8 leading-relaxed">
               100室超の実績が証明。大家目線で厳選した"安価で効果的"リフォームを写真から選ぶだけ。
@@ -415,89 +393,7 @@ export default function About() {
       </section>
 
       {/* フッター */}
-      <footer className="bg-gray-900 text-white py-12 lg:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-            <div className="sm:col-span-2 lg:col-span-1">
-              <Link href="/" className="text-xl sm:text-2xl font-pacifico text-white cursor-pointer">
-                Before-After Homes
-              </Link>
-              <p className="mt-4 sm:mt-6 text-gray-400 text-base sm:text-lg leading-relaxed">
-                写真を選び、広さを入力。
-                <br />
-                あとはプロに任せるだけ。
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 sm:mb-6 text-base sm:text-lg">
-                サービス
-              </h4>
-              <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
-                <li>
-                  <Link href="/about" className="hover:text-white transition-colors duration-200 cursor-pointer">
-                    サービス概要
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/gallery" className="hover:text-white transition-colors duration-200 cursor-pointer">
-                    ギャラリー
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pricing" className="hover:text-white transition-colors duration-200 cursor-pointer">
-                    料金・見積
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/how-it-works" className="hover:text-white transition-colors duration-200 cursor-pointer">
-                    使い方
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 sm:mb-6 text-base sm:text-lg">
-                サポート
-              </h4>
-              <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
-                <li>
-                  <Link href="/faq" className="hover:text-white transition-colors duration-200 cursor-pointer">
-                    よくある質問
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-white transition-colors duration-200 cursor-pointer">
-                    お問い合わせ
-                  </Link>
-                </li>
-                <li className="hover:text-white transition-colors duration-200 cursor-pointer">
-                  利用規約
-                </li>
-                <li className="hover:text-white transition-colors duration-200 cursor-pointer">
-                  プライバシーポリシー
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 sm:mb-6 text-base sm:text-lg">
-                お問い合わせ
-              </h4>
-              <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
-                <p>03-1234-5678</p>
-                <p>info@beforeafter-homes.jp</p>
-                <p>平日 9:00-18:00</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-sm sm:text-base text-gray-400">
-            <p>&copy; 2024 Before-After Homes. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

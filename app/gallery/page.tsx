@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -9,6 +9,7 @@ export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>([]);
 
   const categories = [
     { id: 'all', name: 'すべて', icon: 'ri-home-line' },
@@ -19,7 +20,24 @@ export default function Gallery() {
     { id: 'minimal', name: 'ミニマル', icon: 'ri-subtract-line' }
   ];
 
-  const projects = [
+  // 管理者画面で保存されたデータを読み込み
+  useEffect(() => {
+    const savedProjects = localStorage.getItem('admin_projects');
+    if (savedProjects) {
+      try {
+        const projectData = JSON.parse(savedProjects);
+        setProjects(projectData);
+      } catch (error) {
+        console.error('プロジェクトデータの読み込みに失敗しました:', error);
+        setProjects(getInitialProjects());
+      }
+    } else {
+      setProjects(getInitialProjects());
+    }
+  }, []);
+
+  // 初期プロジェクトデータ
+  const getInitialProjects = () => [
     {
       id: 1,
       title: "伝統的な和室から現代的なリビングへ",
