@@ -25,9 +25,14 @@ export default function Gallery() {
     const initialProjects = getInitialProjects();
     const savedProjects = localStorage.getItem('admin_projects');
 
+    console.log('ギャラリーページ - 初期データ数:', initialProjects.length);
+    console.log('ギャラリーページ - localStorageデータ:', savedProjects);
+
     if (savedProjects) {
       try {
         const projectData = JSON.parse(savedProjects);
+        console.log('ギャラリーページ - パースされた管理画面データ:', projectData);
+
         // 管理画面のデータがある場合は、初期データと結合
         if (Array.isArray(projectData) && projectData.length > 0) {
           // IDの重複を避けるため、管理画面のデータのIDを調整
@@ -36,9 +41,10 @@ export default function Gallery() {
             ...project,
             id: maxInitialId + index + 1
           }));
+          console.log('ギャラリーページ - 結合後のデータ数:', initialProjects.length + adjustedProjectData.length);
           setProjects([...initialProjects, ...adjustedProjectData]);
         } else {
-          // 管理画面のデータが空の場合は初期データのみ
+          console.log('ギャラリーページ - 管理画面データが空、初期データのみ表示');
           setProjects(initialProjects);
         }
       } catch (error) {
@@ -46,6 +52,7 @@ export default function Gallery() {
         setProjects(initialProjects);
       }
     } else {
+      console.log('ギャラリーページ - localStorageにデータなし、初期データのみ表示');
       setProjects(initialProjects);
     }
   }, []);

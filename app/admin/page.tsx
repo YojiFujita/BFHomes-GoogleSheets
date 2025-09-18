@@ -46,43 +46,21 @@ export default function AdminPage() {
     const savedProjects = localStorage.getItem('admin_projects');
     const savedFaqs = localStorage.getItem('admin_faqs');
 
+    console.log('管理画面 - 読み込み時のlocalStorage データ:', savedProjects);
+
     if (savedProjects) {
-      setProjects(JSON.parse(savedProjects));
-    } else {
-      // プロジェクトデータの初期化
-      const initialProjects: Project[] = [
-      {
-        id: 1,
-        title: "伝統的な和室から現代的なリビングへ",
-        category: 'modern',
-        before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20apartment%20interior%20with%20worn%20tatami%20mats%2C%20dark%20wooden%20floors%2C%20outdated%20lighting%20fixtures%2C%20cramped%20layout%2C%20dim%20natural%20lighting%2C%20dated%20wallpaper%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=600&height=400&seq=1&orientation=landscape",
-        after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20apartment%20interior%20with%20light%20wooden%20flooring%2C%20white%20walls%2C%20contemporary%20LED%20lighting%2C%20open%20layout%2C%20large%20windows%20with%20natural%20light%2C%20minimalist%20design%2C%20clean%20and%20spacious%20feeling%2C%20simple%20clean%20background&width=600&height=400&seq=2&orientation=landscape",
-        description: "明るい木目フローリング + 白基調の壁で開放的な空間に生まれ変わりました。",
-        price: "45万円",
-        period: "7日間",
-        location: "東京都渋谷区",
-        date: "2024年1月",
-        area: "30㎡",
-        popular: true,
-        featured: true
-      },
-      {
-        id: 2,
-        title: "古いキッチンから機能的な空間へ",
-        category: 'modern',
-        before: "https://readdy.ai/api/search-image?query=Old%20cramped%20Japanese%20kitchen%20with%20outdated%20appliances%2C%20dark%20countertops%2C%20poor%20lighting%2C%20limited%20storage%20space%2C%20worn%20cabinets%2C%20traditional%20but%20inefficient%20layout%2C%20simple%20clean%20background&width=600&height=400&seq=3&orientation=landscape",
-        after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20kitchen%20with%20white%20cabinets%2C%20marble%20countertops%2C%20under-cabinet%20LED%20lighting%2C%20efficient%20storage%20solutions%2C%20contemporary%20appliances%2C%20clean%20minimalist%20design%2C%20simple%20clean%20background&width=600&height=400&seq=4&orientation=landscape",
-        description: "白いキャビネット + 間接照明で清潔感あふれるモダンキッチンに。",
-        price: "38万円",
-        period: "5日間",
-        location: "東京都新宿区",
-        date: "2024年2月",
-        area: "25㎡",
-        popular: false,
-        featured: true
+      try {
+        const projectData = JSON.parse(savedProjects);
+        console.log('管理画面 - パースされたデータ:', projectData);
+        setProjects(Array.isArray(projectData) ? projectData : []);
+      } catch (error) {
+        console.error('プロジェクトデータの読み込みエラー:', error);
+        setProjects([]);
       }
-      ];
-      setProjects(initialProjects);
+    } else {
+      // 初期状態では空の配列（新規追加されたプロジェクトのみを管理）
+      console.log('管理画面 - localStorageにデータなし、空の配列で開始');
+      setProjects([]);
     }
 
     if (savedFaqs) {
@@ -123,6 +101,8 @@ export default function AdminPage() {
   const saveToLocalStorage = () => {
     setSaveStatus('saving');
     try {
+      console.log('管理画面 - 保存するプロジェクト数:', projects.length);
+      console.log('管理画面 - 保存するプロジェクトデータ:', projects);
       localStorage.setItem('admin_projects', JSON.stringify(projects));
       localStorage.setItem('admin_faqs', JSON.stringify(faqs));
       localStorage.setItem('admin_data_timestamp', new Date().toISOString());
