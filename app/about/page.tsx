@@ -21,7 +21,7 @@ export default function About() {
         />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
               従来のリノベーションを革新する仕組み
             </h1>
             <p className="text-xl sm:text-2xl text-gray-600 mb-8 leading-relaxed">

@@ -100,7 +100,18 @@ export default function Home() {
     if (savedProjects) {
       try {
         const projects = JSON.parse(savedProjects);
-        setBeforeAfterExamples(projects);
+        // 管理画面データがある場合は、初期データと結合
+        if (Array.isArray(projects) && projects.length > 0) {
+          // 初期データから最初の3つを取得し、管理画面データと結合
+          const initialData = beforeAfterExamples;
+          const maxInitialId = Math.max(...initialData.map(p => p.id));
+          const adjustedProjects = projects.map((project: any, index: number) => ({
+            ...project,
+            id: maxInitialId + index + 1,
+            featured: true // ホームページに表示するため
+          }));
+          setBeforeAfterExamples([...initialData, ...adjustedProjects]);
+        }
       } catch (error) {
         console.error('保存されたプロジェクトデータの読み込みに失敗しました:', error);
       }

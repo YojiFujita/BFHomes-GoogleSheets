@@ -20,19 +20,33 @@ export default function Gallery() {
     { id: 'minimal', name: 'ミニマル', icon: 'ri-subtract-line' }
   ];
 
-  // 管理者画面で保存されたデータを読み込み
+  // 管理者画面で保存されたデータを読み込み（初期データと結合）
   useEffect(() => {
+    const initialProjects = getInitialProjects();
     const savedProjects = localStorage.getItem('admin_projects');
+
     if (savedProjects) {
       try {
         const projectData = JSON.parse(savedProjects);
-        setProjects(projectData);
+        // 管理画面のデータがある場合は、初期データと結合
+        if (Array.isArray(projectData) && projectData.length > 0) {
+          // IDの重複を避けるため、管理画面のデータのIDを調整
+          const maxInitialId = Math.max(...initialProjects.map(p => p.id));
+          const adjustedProjectData = projectData.map((project, index) => ({
+            ...project,
+            id: maxInitialId + index + 1
+          }));
+          setProjects([...initialProjects, ...adjustedProjectData]);
+        } else {
+          // 管理画面のデータが空の場合は初期データのみ
+          setProjects(initialProjects);
+        }
       } catch (error) {
         console.error('プロジェクトデータの読み込みに失敗しました:', error);
-        setProjects(getInitialProjects());
+        setProjects(initialProjects);
       }
     } else {
-      setProjects(getInitialProjects());
+      setProjects(initialProjects);
     }
   }, []);
 
