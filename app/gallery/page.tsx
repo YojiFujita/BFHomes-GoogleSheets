@@ -20,214 +20,34 @@ export default function Gallery() {
     { id: 'minimal', name: 'ミニマル', icon: 'ri-subtract-line' }
   ];
 
-  // 管理者画面で保存されたデータを読み込み（初期データと結合）
+  // Google Sheets APIからプロジェクトデータを読み込み
   useEffect(() => {
-    const initialProjects = getInitialProjects();
-    const savedProjects = localStorage.getItem('admin_projects');
-
-    console.log('ギャラリーページ - 初期データ数:', initialProjects.length);
-    console.log('ギャラリーページ - localStorageデータ:', savedProjects);
-
-    if (savedProjects) {
+    const loadProjects = async () => {
       try {
-        const projectData = JSON.parse(savedProjects);
-        console.log('ギャラリーページ - パースされた管理画面データ:', projectData);
+        const response = await fetch('/api/projects');
+        const data = await response.json();
 
-        // 管理画面のデータがある場合は、初期データと結合
-        if (Array.isArray(projectData) && projectData.length > 0) {
-          // IDの重複を避けるため、管理画面のデータのIDを調整
-          const maxInitialId = Math.max(...initialProjects.map(p => p.id));
-          const adjustedProjectData = projectData.map((project, index) => ({
-            ...project,
-            id: maxInitialId + index + 1
-          }));
-          console.log('ギャラリーページ - 結合後のデータ数:', initialProjects.length + adjustedProjectData.length);
-          setProjects([...initialProjects, ...adjustedProjectData]);
+        if (data.projects && Array.isArray(data.projects)) {
+          console.log('ギャラリーページ - データソース:', data.source);
+          console.log('ギャラリーページ - 読み込んだプロジェクト数:', data.projects.length);
+          setProjects(data.projects);
+
+          if (data.error) {
+            console.warn('ギャラリーページ - 警告:', data.error);
+          }
         } else {
-          console.log('ギャラリーページ - 管理画面データが空、初期データのみ表示');
-          setProjects(initialProjects);
+          console.error('ギャラリーページ - 無効なデータ形式');
+          setProjects([]);
         }
       } catch (error) {
-        console.error('プロジェクトデータの読み込みに失敗しました:', error);
-        setProjects(initialProjects);
+        console.error('ギャラリーページ - プロジェクトデータの読み込みエラー:', error);
+        setProjects([]);
       }
-    } else {
-      console.log('ギャラリーページ - localStorageにデータなし、初期データのみ表示');
-      setProjects(initialProjects);
-    }
+    };
+
+    loadProjects();
   }, []);
 
-  // 初期プロジェクトデータ
-  const getInitialProjects = () => [
-    {
-      id: 1,
-      title: "伝統的な和室から現代的なリビングへ",
-      category: 'modern',
-      before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20apartment%20interior%20with%20worn%20tatami%20mats%2C%20dark%20wooden%20floors%2C%20outdated%20lighting%20fixtures%2C%20cramped%20layout%2C%20dim%20natural%20lighting%2C%20dated%20wallpaper%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=600&height=400&seq=1&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20apartment%20interior%20with%20light%20wooden%20flooring%2C%20white%20walls%2C%20contemporary%20LED%20lighting%2C%20open%20layout%2C%20large%20windows%20with%20natural%20light%2C%20minimalist%20design%2C%20clean%20and%20spacious%20feeling%2C%20simple%20clean%20background&width=600&height=400&seq=2&orientation=landscape",
-      description: "明るい木目フローリング + 白基調の壁で開放的な空間に生まれ変わりました。天然木の温もりと白い壁のコントラストが美しく、自然光を最大限に活かした設計となっています。",
-      price: "45万円",
-      period: "7日間",
-      location: "東京都渋谷区",
-      date: "2024年1月",
-      area: "30㎡",
-      popular: true
-    },
-    {
-      id: 2,
-      title: "古いキッチンから機能的な空間へ",
-      category: 'modern',
-      before: "https://readdy.ai/api/search-image?query=Old%20cramped%20Japanese%20kitchen%20with%20outdated%20appliances%2C%20dark%20countertops%2C%20poor%20lighting%2C%20limited%20storage%20space%2C%20worn%20cabinets%2C%20traditional%20but%20inefficient%20layout%2C%20simple%20clean%20background&width=600&height=400&seq=3&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20kitchen%20with%20white%20cabinets%2C%20marble%20countertops%2C%20under-cabinet%20LED%20lighting%2C%20efficient%20storage%20solutions%2C%20contemporary%20appliances%2C%20clean%20minimalist%20design%2C%20simple%20clean%20background&width=600&height=400&seq=4&orientation=landscape",
-      description: "白いキャビネット + 間接照明で清潔感あふれるモダンキッチンに。収納効率を大幅に向上させ、調理動線も最適化しました。LED照明により作業効率も格段にアップしています。",
-      price: "38万円",
-      period: "5日間",
-      location: "東京都新宿区",
-      date: "2024年2月",
-      area: "25㎡",
-      popular: false
-    },
-    {
-      id: 3,
-      title: "狭い浴室からスパのような空間へ",
-      category: 'luxury',
-      before: "https://readdy.ai/api/search-image?query=Old%20small%20Japanese%20bathroom%20with%20outdated%20tiles%2C%20poor%20lighting%2C%20cramped%20space%2C%20traditional%20fixtures%2C%20worn%20surfaces%2C%20dim%20and%20uninviting%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=5&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20luxurious%20Japanese%20bathroom%20with%20contemporary%20tiles%2C%20bright%20LED%20lighting%2C%20spacious%20layout%2C%20modern%20fixtures%2C%20clean%20surfaces%2C%20spa-like%20atmosphere%20with%20natural%20elements%2C%20simple%20clean%20background&width=600&height=400&seq=6&orientation=landscape",
-      description: "現代的なタイル + 高級感のある照明でホテルライクな浴室に変身。防水性能を向上させながら、リラックスできる空間設計を実現しました。",
-      price: "52万円",
-      period: "8日間",
-      location: "東京都港区",
-      date: "2024年3月",
-      area: "18㎡",
-      popular: true
-    },
-    {
-      id: 4,
-      title: "昔ながらの寝室からモダン空間へ",
-      category: 'modern',
-      before: "https://readdy.ai/api/search-image?query=Old%20Japanese%20bedroom%20with%20traditional%20tatami%20flooring%2C%20dark%20wooden%20furniture%2C%20poor%20natural%20lighting%2C%20cramped%20space%2C%20outdated%20traditional%20style%2C%20simple%20clean%20background&width=600&height=400&seq=8&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20bedroom%20with%20light%20hardwood%20floors%2C%20contemporary%20furniture%2C%20excellent%20natural%20lighting%2C%20spacious%20layout%2C%20minimalist%20modern%20decor%2C%20simple%20clean%20background&width=600&height=400&seq=9&orientation=landscape",
-      description: "フローリング + 現代的な家具配置で快適な寝室に。睡眠の質を向上させる照明設計と、収納効率を考慮したレイアウトが特徴です。",
-      price: "42万円",
-      period: "6日間",
-      location: "東京都世田谷区",
-      date: "2024年4月",
-      area: "28㎡",
-      popular: false
-    },
-    {
-      id: 5,
-      title: "玄関から始まる新しい暮らし",
-      category: 'minimal',
-      before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20entryway%20with%20worn%20wooden%20floors%2C%20outdated%20storage%2C%20poor%20lighting%2C%20cramped%20layout%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=600&height=400&seq=10&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20entryway%20with%20contemporary%20flooring%2C%20efficient%20storage%20solutions%2C%20excellent%20LED%20lighting%2C%20spacious%20organized%20layout%2C%20clean%20minimalist%20design%2C%20simple%20clean%20background&width=600&height=400&seq=11&orientation=landscape",
-      description: "効率的な収納 + LED照明で機能的な玄関に。第一印象を決める重要な空間として、来客時の印象も大幅に向上させました。",
-      price: "28万円",
-      period: "4日間",
-      location: "東京都品川区",
-      date: "2024年5月",
-      area: "15㎡",
-      popular: false
-    },
-    {
-      id: 6,
-      title: "食事空間の現代的な変身",
-      category: 'natural',
-      before: "https://readdy.ai/api/search-image?query=Old%20Japanese%20dining%20area%20with%20traditional%20low%20table%2C%20tatami%20seating%2C%20poor%20lighting%2C%20cramped%20space%2C%20outdated%20traditional%20style%2C%20simple%20clean%20background&width=600&height=400&seq=12&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20dining%20area%20with%20contemporary%20dining%20table%2C%20modern%20chairs%2C%20excellent%20lighting%2C%20spacious%20layout%2C%20natural%20wood%20elements%2C%20warm%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=13&orientation=landscape",
-      description: "ダイニングテーブル + モダンチェアで家族団らんの時間をより豊かに。自然素材を活用し、照明計画により食事の時間がより楽しくなる空間に仕上げました。",
-      price: "35万円",
-      period: "5日間",
-      location: "東京都目黒区",
-      date: "2024年6月",
-      area: "22㎡",
-      popular: true
-    },
-    {
-      id: 7,
-      title: "ヴィンテージ感漂う書斎空間",
-      category: 'vintage',
-      before: "https://readdy.ai/api/search-image?query=Old%20cramped%20Japanese%20study%20room%20with%20poor%20lighting%2C%20outdated%20furniture%2C%20limited%20storage%2C%20traditional%20but%20inefficient%20layout%2C%20worn%20surfaces%2C%20simple%20clean%20background&width=600&height=400&seq=14&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20vintage-style%20Japanese%20study%20room%20with%20exposed%20brick%20walls%2C%20vintage%20furniture%2C%20warm%20lighting%2C%20efficient%20storage%2C%20leather%20chairs%2C%20classic%20design%20elements%2C%20simple%20clean%20background&width=600&height=400&seq=15&orientation=landscape",
-      description: "レンガ調の壁 + ヴィンテージ家具で趣のある書斎に。集中力を高める照明設計と、書籍や資料を効率的に収納できる設計が特徴です。",
-      price: "48万円",
-      period: "7日間",
-      location: "東京都中野区",
-      date: "2024年7月",
-      area: "20㎡",
-      popular: false
-    },
-    {
-      id: 8,
-      title: "ラグジュアリーなマスターベッドルーム",
-      category: 'luxury',
-      before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20bedroom%20with%20worn%20tatami%20flooring%2C%20outdated%20furniture%2C%20poor%20lighting%2C%20cramped%20space%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=600&height=400&seq=16&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20luxury%20Japanese%20bedroom%20with%20premium%20materials%2C%20elegant%20furniture%2C%20sophisticated%20lighting%2C%20spacious%20layout%2C%20high-end%20finishes%2C%20hotel-like%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=17&orientation=landscape",
-      description: "高級素材 + 上質な照明でホテルライクな寝室に。プライベート空間としての快適性を追求し、最高の睡眠環境を提供する設計です。",
-      price: "68万円",
-      period: "10日間",
-      location: "東京都港区",
-      date: "2024年8月",
-      area: "35㎡",
-      popular: true
-    },
-    {
-      id: 9,
-      title: "ミニマルなワーキングスペース",
-      category: 'minimal',
-      before: "https://readdy.ai/api/search-image?query=Old%20cluttered%20Japanese%20work%20room%20with%20outdated%20furniture%2C%20poor%20organization%2C%20inadequate%20lighting%2C%20cramped%20layout%2C%20traditional%20but%20inefficient%20setup%2C%20simple%20clean%20background&width=600&height=400&seq=18&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20minimalist%20Japanese%20work%20room%20with%20clean%20lines%2C%20efficient%20storage%2C%20excellent%20lighting%2C%20spacious%20layout%2C%20contemporary%20furniture%2C%20organized%20workspace%2C%20simple%20clean%20background&width=600&height=400&seq=19&orientation=landscape",
-      description: "シンプルな家具 + 整理された収納で集中できるワークスペースに。在宅勤務の効率を最大化する設計で、必要なものだけを厳選した空間です。",
-      price: "32万円",
-      period: "5日間",
-      location: "東京都渋谷区",
-      date: "2024年9月",
-      area: "18㎡",
-      popular: false
-    },
-    {
-      id: 10,
-      title: "自然素材あふれるリビングルーム",
-      category: 'natural',
-      before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20living%20room%20with%20worn%20surfaces%2C%20outdated%20furniture%2C%20poor%20lighting%2C%20cramped%20space%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=600&height=400&seq=20&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20natural%20Japanese%20living%20room%20with%20wood%20elements%2C%20plants%2C%20natural%20lighting%2C%20organic%20textures%2C%20earth%20tones%2C%20eco-friendly%20materials%2C%20peaceful%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=21&orientation=landscape",
-      description: "天然木 + 観葉植物で自然を感じるリビングに。環境にやさしい素材を使用し、家族がリラックスできる癒しの空間を実現しました。",
-      price: "55万円",
-      period: "8日間",
-      location: "東京都杉並区",
-      date: "2024年10月",
-      area: "40㎡",
-      popular: true
-    },
-    {
-      id: 11,
-      title: "モダンなファミリーキッチン",
-      category: 'modern',
-      before: "https://readdy.ai/api/search-image?query=Old%20cramped%20Japanese%20family%20kitchen%20with%20outdated%20appliances%2C%20poor%20storage%2C%20inefficient%20layout%2C%20worn%20surfaces%2C%20traditional%20but%20outdated%20design%2C%20simple%20clean%20background&width=600&height=400&seq=22&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20bright%20Japanese%20family%20kitchen%20with%20island%20counter%2C%20contemporary%20appliances%2C%20efficient%20storage%2C%20open%20layout%2C%20family-friendly%20design%2C%20clean%20minimalist%20style%2C%20simple%20clean%20background&width=600&height=400&seq=23&orientation=landscape",
-      description: "アイランドキッチン + 効率的な収納で家族みんなが使いやすいキッチンに。調理、食事、コミュニケーションが自然に生まれる空間設計です。",
-      price: "62万円",
-      period: "9日間",
-      location: "東京都練馬区",
-      date: "2024年11月",
-      area: "32㎡",
-      popular: false
-    },
-    {
-      id: 12,
-      title: "ヴィンテージスタイルのカフェ空間",
-      category: 'vintage',
-      before: "https://readdy.ai/api/search-image?query=Old%20traditional%20Japanese%20room%20with%20poor%20lighting%2C%20outdated%20furniture%2C%20worn%20surfaces%2C%20cramped%20layout%2C%20traditional%20but%20tired%20appearance%2C%20simple%20clean%20background&width=600&height=400&seq=24&orientation=landscape",
-      after: "https://readdy.ai/api/search-image?query=Modern%20vintage-style%20Japanese%20cafe%20space%20with%20exposed%20elements%2C%20vintage%20furniture%2C%20warm%20lighting%2C%20cozy%20atmosphere%2C%20rustic%20charm%2C%20antique%20accessories%2C%20simple%20clean%20background&width=600&height=400&seq=25&orientation=landscape",
-      description: "アンティーク家具 + 温かみのある照明でカフェのような空間に。友人や家族との時間を特別なものにする、居心地の良い空間です。",
-      price: "44万円",
-      period: "6日間",
-      location: "東京都台東区",
-      date: "2024年12月",
-      area: "26㎡",
-      popular: true
-    }
-  ];
 
   const filteredProjects = selectedCategory === 'all' 
     ? projects 

@@ -1,42 +1,80 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+
+interface PricingData {
+  id: number;
+  serviceType: string;
+  name: string;
+  price: number;
+  displayPrice: string;
+  description?: string;
+  category: string;
+}
 
 export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState('basic');
   const [area, setArea] = useState('');
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [estimateResult, setEstimateResult] = useState<number | null>(null);
+  const [pricingData, setPricingData] = useState<PricingData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const basicServices = [
-    'CF（クッションフロア）張り替え',
-    '壁紙張り替え',
-    '簡易補修',
-    'ハウスクリーニング',
-    '畳表替え',
-    '襖張り替え',
-    '障子張り替え',
-    'ソフト巾木交換'
-  ];
+  // Google Sheets APIから料金データを読み込み
+  useEffect(() => {
+    const loadPricingData = async () => {
+      try {
+        const response = await fetch('/api/pricing');
+        const data = await response.json();
 
-  const optionServices = [
-    { id: 'ceiling', name: '天井張替え', price: 30000, displayPrice: '30,000円～' },
-    { id: 'lighting', name: '照明アップグレード（間接照明・LED）', price: 20000, displayPrice: '20,000円～' },
-    { id: 'water', name: '水回り簡易改修（キッチン・洗面台など）', price: 50000, displayPrice: '50,000円～' }
-  ];
+        if (data.pricingData && Array.isArray(data.pricingData)) {
+          console.log('料金ページ - データソース:', data.source);
+          console.log('料金ページ - 読み込んだ料金データ数:', data.pricingData.length);
+          setPricingData(data.pricingData);
 
-  const additionalServices = [
-    { name: '現地調査', price: '無料', description: '専門スタッフによる詳細な現地調査' },
-    { name: '3D完成イメージ', price: '10,000円', description: '完成後のイメージを3Dで確認' },
-    { name: '解体・廃材処理', price: '5,000円/㎡', description: '既存材の解体と適切な廃材処理' },
-    { name: '家具移動サービス', price: '20,000円', description: '工事期間中の家具移動・保管' },
-    { name: '仮住まい手配', price: '相談', description: '工事期間中の仮住まい手配サポート' },
-    { name: '緊急対応', price: '15,000円', description: '工事後の緊急トラブル対応' }
-  ];
+          if (data.error) {
+            console.warn('料金ページ - 警告:', data.error);
+          }
+        } else {
+          console.error('料金ページ - 無効なデータ形式');
+          setPricingData([]);
+        }
+      } catch (error) {
+        console.error('料金ページ - 料金データの読み込みエラー:', error);
+        setPricingData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPricingData();
+  }, []);
+
+  // データからサービスリストを生成
+  const basicServices = pricingData
+    .filter(item => item.serviceType === 'basic')
+    .map(item => item.name);
+
+  const optionServices = pricingData
+    .filter(item => item.serviceType === 'option')
+    .map(item => ({
+      id: item.id.toString(),
+      name: item.name,
+      price: item.price,
+      displayPrice: item.displayPrice
+    }));
+
+  const additionalServices = pricingData
+    .filter(item => item.serviceType === 'additional')
+    .map(item => ({
+      name: item.name,
+      price: item.displayPrice,
+      description: item.description || ''
+    }));
 
   const handleOptionChange = (optionId: string) => {
     setSelectedOptions(prev => {
@@ -65,6 +103,21 @@ export default function PricingPage() {
     const estimate = basePrice + optionPrice;
     setEstimateResult(estimate);
   };
+
+  // ローディング中の表示
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header currentPage="料金・見積" />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">料金データを読み込み中...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">

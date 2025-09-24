@@ -40,79 +40,100 @@ export default function AdminPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'unsaved' | 'saving'>('saved');
 
-  // 初期データの読み込み
+  // Google Sheets APIからデータを読み込み
   useEffect(() => {
-    // ローカルストレージからデータを読み込み
-    const savedProjects = localStorage.getItem('admin_projects');
-    const savedFaqs = localStorage.getItem('admin_faqs');
-
-    console.log('管理画面 - 読み込み時のlocalStorage データ:', savedProjects);
-
-    if (savedProjects) {
+    const loadData = async () => {
       try {
-        const projectData = JSON.parse(savedProjects);
-        console.log('管理画面 - パースされたデータ:', projectData);
-        setProjects(Array.isArray(projectData) ? projectData : []);
-      } catch (error) {
-        console.error('プロジェクトデータの読み込みエラー:', error);
-        setProjects([]);
-      }
-    } else {
-      // 初期状態では空の配列（新規追加されたプロジェクトのみを管理）
-      console.log('管理画面 - localStorageにデータなし、空の配列で開始');
-      setProjects([]);
-    }
+        // プロジェクトデータの読み込み
+        const projectsResponse = await fetch('/api/projects');
+        const projectsData = await projectsResponse.json();
 
-    if (savedFaqs) {
-      setFaqs(JSON.parse(savedFaqs));
-    } else {
-      // FAQ データの初期化
-      const initialFaqs: FAQ[] = [
-      {
-        id: 1,
-        question: "見積もりは無料ですか？",
-        answer: "はい、見積もりは完全無料です。現地調査や詳細なプラン提案も追加料金なしで承ります。お気軽にお問い合わせください。",
-        category: "料金・見積もり",
-        order: 1,
-        visible: true
-      },
-      {
-        id: 2,
-        question: "工事期間はどのくらいかかりますか？",
-        answer: "工事内容により異なりますが、一般的には3-10日程度です。キッチンリフォームは3-5日、リビング全体は7-10日が目安となります。",
-        category: "工事・施工",
-        order: 2,
-        visible: true
-      },
-      {
-        id: 3,
-        question: "追加費用は発生しますか？",
-        answer: "事前にお見積もりした金額から追加費用は発生いたしません。透明性のある料金体系で、安心してご利用いただけます。",
-        category: "料金・見積もり",
-        order: 3,
-        visible: true
+        if (projectsData.projects && Array.isArray(projectsData.projects)) {
+          console.log('管理画面 - プロジェクトデータ読み込み成功:', projectsData.projects.length);
+          setProjects(projectsData.projects);
+        } else {
+          console.error('管理画面 - 無効なプロジェクトデータ形式');
+          setProjects([]);
+        }
+
+        // FAQデータはローカルストレージから読み込み（まだGoogle Sheets未対応）
+        const savedFaqs = localStorage.getItem('admin_faqs');
+
+        if (savedFaqs) {
+          setFaqs(JSON.parse(savedFaqs));
+        } else {
+          // FAQ データの初期化
+          const initialFaqs: FAQ[] = [
+            {
+              id: 1,
+              question: "見積もりは無料ですか？",
+              answer: "はい、見積もりは完全無料です。現地調査や詳細なプラン提案も追加料金なしで承ります。お気軽にお問い合わせください。",
+              category: "料金・見積もり",
+              order: 1,
+              visible: true
+            },
+            {
+              id: 2,
+              question: "工事期間はどのくらいかかりますか？",
+              answer: "工事内容により異なりますが、一般的には3-10日程度です。キッチンリフォームは3-5日、リビング全体は7-10日が目安となります。",
+              category: "工事・施工",
+              order: 2,
+              visible: true
+            },
+            {
+              id: 3,
+              question: "追加費用は発生しますか？",
+              answer: "事前にお見積もりした金額から追加費用は発生いたしません。透明性のある料金体系で、安心してご利用いただけます。",
+              category: "料金・見積もり",
+              order: 3,
+              visible: true
+            }
+          ];
+          setFaqs(initialFaqs);
+        }
+      } catch (error) {
+        console.error('管理画面 - データ読み込みエラー:', error);
+        setProjects([]);
+        setFaqs([]);
       }
-      ];
-      setFaqs(initialFaqs);
-    }
+    };
+
+    loadData();
   }, []);
 
-  // ローカルストレージに保存
-  const saveToLocalStorage = () => {
+  // Google Sheetsに保存
+  const saveToGoogleSheets = async () => {
     setSaveStatus('saving');
     try {
       console.log('管理画面 - 保存するプロジェクト数:', projects.length);
       console.log('管理画面 - 保存するプロジェクトデータ:', projects);
-      localStorage.setItem('admin_projects', JSON.stringify(projects));
-      localStorage.setItem('admin_faqs', JSON.stringify(faqs));
-      localStorage.setItem('admin_data_timestamp', new Date().toISOString());
-      setSaveStatus('saved');
-      setHasUnsavedChanges(false);
-      alert('データをローカルストレージに保存しました。メイン画面に反映されます。');
+
+      // プロジェクトデータをGoogle Sheetsに保存
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ projects }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // FAQデータはローカルストレージに保存（まだGoogle Sheets未対応）
+        localStorage.setItem('admin_faqs', JSON.stringify(faqs));
+        localStorage.setItem('admin_data_timestamp', new Date().toISOString());
+
+        setSaveStatus('saved');
+        setHasUnsavedChanges(false);
+        alert(`${result.message}\nFAQデータはローカルストレージに保存されました。`);
+      } else {
+        throw new Error(result.error || '保存に失敗しました');
+      }
     } catch (error) {
       console.error('保存エラー:', error);
       setSaveStatus('unsaved');
-      alert('保存に失敗しました。');
+      alert(`保存に失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -204,7 +225,7 @@ export default function AdminPage() {
             <div className="flex items-center space-x-4">
               {/* 保存ボタン */}
               <button
-                onClick={saveToLocalStorage}
+                onClick={saveToGoogleSheets}
                 disabled={saveStatus === 'saving' || (!hasUnsavedChanges && saveStatus === 'saved')}
                 className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 cursor-pointer ${
                   saveStatus === 'saving' || (!hasUnsavedChanges && saveStatus === 'saved')
@@ -213,7 +234,7 @@ export default function AdminPage() {
                 }`}
               >
                 <i className="ri-save-line mr-2"></i>
-                {saveStatus === 'saving' ? '保存中...' : 'メイン画面に反映'}
+                {saveStatus === 'saving' ? '保存中...' : 'Google Sheetsに保存'}
               </button>
               <Link href="/" className="text-gray-600 hover:text-gray-900 cursor-pointer flex items-center">
                 <i className="ri-home-line text-xl mr-2"></i>
