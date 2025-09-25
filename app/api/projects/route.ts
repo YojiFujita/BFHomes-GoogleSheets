@@ -4,6 +4,16 @@ import { saveProjectsToSheets, loadProjectsFromSheets, ProjectData } from '../..
 // プロジェクトデータを取得
 export async function GET() {
   try {
+    // 環境変数の存在確認
+    const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+    const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+
+    console.log('Environment check:', {
+      hasSpreadsheetId: !!spreadsheetId,
+      hasServiceAccountKey: !!serviceAccountKey,
+      spreadsheetId: spreadsheetId
+    });
+
     // Google Sheetsからデータを取得
     const projects = await loadProjectsFromSheets();
 
@@ -18,7 +28,11 @@ export async function GET() {
       projects: [],
       source: 'error',
       error: 'Google Sheetsからのデータ読み込みに失敗しました',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      env_check: {
+        hasSpreadsheetId: !!process.env.GOOGLE_SPREADSHEET_ID,
+        hasServiceAccountKey: !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY
+      }
     }, { status: 500 });
   }
 }
