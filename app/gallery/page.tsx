@@ -28,8 +28,6 @@ export default function Gallery() {
         const data = await response.json();
 
         if (data.projects && Array.isArray(data.projects)) {
-          console.log('ギャラリーページ - データソース:', data.source);
-          console.log('ギャラリーページ - 読み込んだプロジェクト数:', data.projects.length);
           setProjects(data.projects);
 
           if (data.error) {
@@ -49,8 +47,8 @@ export default function Gallery() {
   }, []);
 
 
-  const filteredProjects = selectedCategory === 'all' 
-    ? projects 
+  const filteredProjects = selectedCategory === 'all'
+    ? projects
     : projects.filter(project => project.category === selectedCategory);
 
   const popularProjects = projects.filter(project => project.popular);
